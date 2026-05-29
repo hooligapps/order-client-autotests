@@ -1,0 +1,32 @@
+{
+  "name": "order-client-autotests",
+  "version": "0.1.0",
+  "private": true,
+  "description": "E2E autotests for the WebGL order client",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:release": "playwright test --grep @release",
+    "test:tutor": "playwright test --grep @tutor",
+    "test:dev": "cross-env AUTOTEST_ENV=dev playwright test",
+    "test:prod": "cross-env AUTOTEST_ENV=prod playwright test",
+    "report": "playwright show-report",
+    "docker:build": "docker compose build",
+    "docker:test": "docker compose run --rm playwright",
+    "docker:test:smoke": "docker compose run --rm smoke",
+    "docker:test:release": "docker compose run --rm release",
+    "docker:test:tutor": "docker compose run --rm tutor",
+    "docker:test:dev": "docker compose --profile dev run --rm dev",
+    "docker:test:dev:smoke": "docker compose --profile dev run --rm dev-smoke",
+    "docker:test:dev:tutor": "docker compose --profile dev run --rm dev-tutor",
+    "docker:test:prod": "docker compose --profile prod run --rm prod",
+    "docker:test:prod:release": "docker compose --profile prod run --rm prod-release"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.60.0",
+    "@types/node": "^24.0.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.8.3"
+  }
+}
