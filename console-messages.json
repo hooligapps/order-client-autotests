@@ -1,0 +1,1696 @@
+[
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.data.gz' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityMemory] Configuration Parameters - Can be set up in boot.config\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-allocator-temp-initial-block-size-main=262144\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-allocator-temp-initial-block-size-worker=262144\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-temp-allocator-size-audio-worker=65536\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-temp-allocator-size-cloud-worker=32768\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-temp-allocator-size-background-worker=32768\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-bucket-allocator-granularity=16\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-bucket-allocator-bucket-count=8\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-bucket-allocator-block-size=4194304\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-bucket-allocator-block-count=1\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-main-allocator-block-size=16777216\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-thread-allocator-block-size=16777216\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-gfx-main-allocator-block-size=16777216\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-gfx-thread-allocator-block-size=16777216\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-cache-allocator-block-size=4194304\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-typetree-allocator-block-size=2097152\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-profiler-bucket-allocator-granularity=16\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-profiler-bucket-allocator-bucket-count=8\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-profiler-bucket-allocator-block-size=4194304\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-profiler-bucket-allocator-block-count=1\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-profiler-allocator-block-size=16777216\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-profiler-editor-allocator-block-size=1048576\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-temp-allocator-size-main=4194304\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-job-temp-allocator-block-size=2097152\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-job-temp-allocator-block-size-background=1048576\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "    \"memorysetup-job-temp-allocator-reduction-small-platforms=262144\"\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Input System module state changed to: Initialized.\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[Physics::Module] Initialized fallback backend.\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[Physics::Module] Id: 0xdecafbad\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Loading player data from data.unity3d\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Initialize engine version: 6000.3.14f1 (d68c3f99a318)\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[Subsystems] Discovering subsystems at path UnitySubsystems\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Creating WebGL 2.0 context.",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 1312,
+      "lineNumber": 0,
+      "columnNumber": 1312
+    }
+  },
+  {
+    "type": "log",
+    "text": "Renderer: WebKit WebGL\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Vendor:   WebKit\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Version:  OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "GLES:     3\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": " EXT_clip_control EXT_color_buffer_float EXT_color_buffer_half_float EXT_conservative_depth EXT_depth_clamp EXT_float_blend EXT_polygon_offset_clamp EXT_texture_compression_bptc EXT_texture_compression_rgtc EXT_texture_filter_anisotropic EXT_texture_mirror_clamp_to_edge NV_shader_noperspective_interpolation OES_draw_buffers_indexed OES_sample_variables OES_shader_multisample_interpolation OES_texture_float_linear OVR_multiview2 WEBGL_clip_cull_distance WEBGL_compressed_texture_astc WEBGL_compressed_texture_etc WEBGL_compressed_texture_etc1 WEBGL_compressed_texture_s3tc WEBGL_compressed_texture_s3tc_srgb WEBGL_debug_renderer_info WEBGL_debug_shaders WEBGL_lose_context WEBGL_multi_draw WEBGL_polygon_mode WEBGL_stencil_texturing GL_EXT_clip_control GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_conservative_depth GL_EXT_depth_clamp GL_EXT_float_blend GL_EXT_polygon_offset_clamp GL_EXT_texture_compression_bptc GL_EXT_texture_compression_rgtc GL_EXT_texture_filter_anisotropic GL_EXT_texture_mirro\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "r_clamp_to_edge GL_NV_shader_noperspective_interpolation GL_OES_draw_buffers_indexed GL_OES_sample_variables GL_OES_shader_multisample_interpolation GL_OES_texture_float_linear GL_OVR_multiview2 GL_WEBGL_clip_cull_distance GL_WEBGL_compressed_texture_astc GL_WEBGL_compressed_texture_etc GL_WEBGL_compressed_texture_etc1 GL_WEBGL_compressed_texture_s3tc GL_WEBGL_compressed_texture_s3tc_srgb GL_WEBGL_debug_renderer_info GL_WEBGL_debug_shaders GL_WEBGL_lose_context GL_WEBGL_multi_draw GL_WEBGL_polygon_mode GL_WEBGL_stencil_texturing\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "OPENGL LOG: Creating OpenGL ES 3.0 graphics device ; Context level  <OpenGL ES 3.0> ; Context handle 1\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[Physics::Module] Selected backend.\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[Physics::Module] Name: PhysX\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[Physics::Module] Id: 0xf2b8ea05\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[Physics::Module] SDK Version: 4.1.2\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[Physics::Module] Integration Version: 1.0.0\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[Physics::Module] Threading Mode: Single-Threaded\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "ERROR: Shader ",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Hidden/CoreSRP/CoreCopy shader is not supported on this GPU (none of subshaders/fallbacks are suitable)\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "ERROR: Shader ",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Hidden/Universal/HDRDebugView shader is not supported on this GPU (none of subshaders/fallbacks are suitable)\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Input System initialize...\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "UnloadTime: 1.700000 ms\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "warning",
+    "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 30872,
+      "lineNumber": 8,
+      "columnNumber": 30872
+    }
+  },
+  {
+    "type": "log",
+    "text": "Version: 1.0.10\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Build time: 2026-05-29 22:37Z\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Server url: https://order-dev.igra.rocks/api\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "App paused: False\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[HApps:DEBUG] SDK v1.0.1-debug initialized",
+    "location": {
+      "url": "https://portal.igra.rocks/public/js/sdk/1.0.1/hooligapps.debug.js",
+      "line": 75,
+      "column": 18,
+      "lineNumber": 75,
+      "columnNumber": 18
+    }
+  },
+  {
+    "type": "log",
+    "text": "HApps ready, user: null",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/?autotest=true",
+      "line": 197,
+      "column": 18,
+      "lineNumber": 197,
+      "columnNumber": 18
+    }
+  },
+  {
+    "type": "log",
+    "text": "Audio context resumed after 0.338 seconds.",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 129583,
+      "lineNumber": 8,
+      "columnNumber": 129583
+    }
+  },
+  {
+    "type": "warning",
+    "text": "[.WebGL-0x4c01827800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/?autotest=true",
+      "line": 0,
+      "column": 0,
+      "lineNumber": 0,
+      "columnNumber": 0
+    }
+  },
+  {
+    "type": "warning",
+    "text": "[.WebGL-0x4c01827800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/?autotest=true",
+      "line": 0,
+      "column": 0,
+      "lineNumber": 0,
+      "columnNumber": 0
+    }
+  },
+  {
+    "type": "warning",
+    "text": "[.WebGL-0x4c01827800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/?autotest=true",
+      "line": 0,
+      "column": 0,
+      "lineNumber": 0,
+      "columnNumber": 0
+    }
+  },
+  {
+    "type": "log",
+    "text": "<b>>>> GET /buildTime?1780149717743</b>\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "warning",
+    "text": "[.WebGL-0x4c01827800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/?autotest=true",
+      "line": 0,
+      "column": 0,
+      "lineNumber": 0,
+      "columnNumber": 0
+    }
+  },
+  {
+    "type": "log",
+    "text": "<<< /buildTime?1780149717743: 1780073789\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[HApps] Provider created\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AssetManager] Bundle 'catalog_2026.05.29.22.37.11' loaded in 1.1 sec. WasPaused: False",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 164058,
+      "lineNumber": 8,
+      "columnNumber": 164058
+    }
+  },
+  {
+    "type": "log",
+    "text": "Use social manager: MockSocialManager\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity-origin.dirtyleague.com/orden-dev/StreamingAssets/aa/WebGL/7909da8820ce511cc30b936ff8d01707_monoscripts_e48cc566fb3945e6d8e8f34214989315.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity-origin.dirtyleague.com/orden-dev/StreamingAssets/aa/WebGL/7909da8820ce511cc30b936ff8d01707_unitybuiltinassets_7ddd2b317208431d1dc649c3e0345f0f.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity-origin.dirtyleague.com/orden-dev/StreamingAssets/aa/WebGL/defaultlocalgroup_assets_all_c68f427d17ce8d27d0abb97fff93de93.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity-origin.dirtyleague.com/orden-dev/StreamingAssets/aa/WebGL/fonts_assets_all_9ad9c00f2c4c663d80c455a4bbadfe3e.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AssetManager] Bundle 'shared_assets_all' loaded in 1.8 sec. WasPaused: False",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 164058,
+      "lineNumber": 8,
+      "columnNumber": 164058
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AssetManager] Bundle 'anims_shared_assets_all' loaded in 2.0 sec. WasPaused: False",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 164058,
+      "lineNumber": 8,
+      "columnNumber": 164058
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/anims_shared_assets_all_d0bb31439adf5824eca3b5132aeead6e.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AssetManager] Bundle 'fonts_fb_1_assets_all' loaded in 4.2 sec. WasPaused: False",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 164058,
+      "lineNumber": 8,
+      "columnNumber": 164058
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AssetManager] Bundle 'fonts_fb_2_assets_all' loaded in 4.3 sec. WasPaused: False",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 164058,
+      "lineNumber": 8,
+      "columnNumber": 164058
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AssetManager] Bundle 'common_ui_assets_all' loaded in 4.5 sec. WasPaused: False",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 164058,
+      "lineNumber": 8,
+      "columnNumber": 164058
+    }
+  },
+  {
+    "type": "log",
+    "text": "Preloader screen is shown\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity-origin.dirtyleague.com/orden-dev/StreamingAssets/aa/WebGL/shared_assets_all_f6bb6468e3f468f1668a966593aeded0.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/fonts_fb_2_assets_all_06b96ae2032c43fdfdac666f8a0c4b3b.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/fonts_fb_1_assets_all_27a3dfa33daaf1040d10a4f99c55cf5d.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/common_ui_assets_all_b3fbda10a48c1133569df332576e734e.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AgeVerifier] Result: True, Token: , Sid: , HeroId: \n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Language: en\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/locales_assets_all_052e825bfb67a6cb785065da2b17492e.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/locales_assets_all_052e825bfb67a6cb785065da2b17492e.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/locales_assets_all_052e825bfb67a6cb785065da2b17492e.bundle' successfully revalidated and served from the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AssetManager] Bundle 'match3_battle_card_assets_all' loaded in 2.3 sec. WasPaused: False",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 164058,
+      "lineNumber": 8,
+      "columnNumber": 164058
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/match3_battle_card_assets_all_5e13a98659898eb893547d2768a8f72f.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AssetManager] Bundle 'dashboard_assets_all' loaded in 6.0 sec. WasPaused: False",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 164058,
+      "lineNumber": 8,
+      "columnNumber": 164058
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AssetManager] Bundle 'dialogues_assets_all' loaded in 6.4 sec. WasPaused: False",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 164058,
+      "lineNumber": 8,
+      "columnNumber": 164058
+    }
+  },
+  {
+    "type": "log",
+    "text": "Start social authorization\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Social id: -1, nick: local\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Start server authorization\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "<b>>>> POST /auth?autotest=true</b> {\"opensocial_viewer_id\":\"-1\",\"nickname\":\"local\",\"isMobile\":0}\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "<<< /auth?autotest=true: {\"hid\":1490,\"auth\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoaWQiOjE0OTAsImlhdCI6MTc4MDE0OTczNn0.AjEhEDVCmTfEApZ8l1bAwaRoewct-Z6Eob7UIHYC7uw\",\"group\":\"a\"}\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Server auth complete. HeroId: 1490, AuthToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoaWQiOjE0OTAsImlhdCI6MTc4MDE0OTczNn0.AjEhEDVCmTfEApZ8l1bAwaRoewct-Z6Eob7UIHYC7uw\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "<b>>>> GET /version?1780149736964</b>\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "<<< /version?1780149736964: {\"version\":\"Fri, 29 May 2026 14:41:34 GMT\"}\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "<b>>>> GET /configs?v=1.0.10</b>\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "<<< /configs?v=1.0.10: {\"ui\":{\"showBuyResourcesForCardLevelUp\":false,\"discordUrl\":\"https://discord.gg/3k5QrkSrQG\",\"signUpPopupMin\":5},\"hero\":{\"changeNicknamePrice\":350,\"cardLevelDiff\":200,\"defaultAvatars\":[1,2,3,10,11],\"signUpRewards\":[{\"type\":\"gold\",\"amount\":7500},{\"type\":\"crystals\",\"amount\":150},{\"type\":\"card\",\"refId\":52,\"amount\":10}],\"surveyReward\":[{\"type\":\"crystals\",\"amount\":200}],\"tutorGirlId\":12,\"surveyConditionsIds\":[{\"id\":255}],\"questPeriodicCondition\":[{\"id\":194}],\"duplicateDowngradeMult\":1.25},\"heroLevels\":{\"1\":{\"xp\":0,\"rewards\":[]},\"2\":{\"xp\":250,\"rewards\":[{\"type\":\"gold\",\"amount\":10000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"randomDuplicate\",\"amount\":5,\"data\":{\"rarity\":\"r\"}}]},\"3\":{\"xp\":1000,\"rewards\":[{\"type\":\"gold\",\"amount\":10000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"randomDuplicate\",\"amount\":5,\"data\":{\"rarity\":\"r\"}}]},\"4\":{\"xp\":2000,\"rewards\":[{\"type\":\"gold\",\"amount\":10000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"randomDuplicate\",\"amount\":5,\"data\":{\"rarity\":\"r\"}}]},\"5\":{\"xp\":3000,\"rewards\":[{\"type\":\"gold\",\"amount\":10000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"randomDuplicate\",\"amount\":5,\"data\":{\"rarity\":\"r\"}}]},\"6\":{\"xp\":4000,\"rewards\":[{\"type\":\"gold\",\"amount\":10000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"randomDuplicate\",\"amount\":5,\"data\":{\"rarity\":\"r\"}}]},\"7\":{\"xp\":5000,\"rewards\":[{\"type\":\"gold\",\"amount\":10000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"randomDuplicate\",\"amount\":5,\"data\":{\"rarity\":\"r\"}}]},\"8\":{\"xp\":5500,\"rewards\":[{\"type\":\"gold\",\"amount\":10000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"randomDuplicate\",\"amount\":5,\"data\":{\"rarity\":\"r\"}}]},\"9\":{\"xp\":6000,\"rewards\":[{\"type\":\"gold\",\"amount\":10000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"randomDuplicate\",\"amount\":5,\"data\":{\"rarity\":\"r\"}}]},\"10\":{\"xp\":6500,\"rewards\":[{\"type\":\"gold\",\"amount\":20000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"randomDuplicate\",\"amount\":5,\"data\":{\"rarity\":\"r\"}}]},\"11\":{\"xp\":7000,\"rewards\":[{\"type\":\"gold\",\"amount\":20000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"12\":{\"xp\":7500,\"rewards\":[{\"type\":\"gold\",\"amount\":20000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"13\":{\"xp\":8000,\"rewards\":[{\"type\":\"gold\",\"amount\":20000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"14\":{\"xp\":8500,\"rewards\":[{\"type\":\"gold\",\"amount\":20000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"15\":{\"xp\":9000,\"rewards\":[{\"type\":\"gold\",\"amount\":20000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"16\":{\"xp\":9500,\"rewards\":[{\"type\":\"gold\",\"amount\":20000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"17\":{\"xp\":10000,\"rewards\":[{\"type\":\"gold\",\"amount\":20000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"18\":{\"xp\":10500,\"rewards\":[{\"type\":\"gold\",\"amount\":20000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"19\":{\"xp\":11000,\"rewards\":[{\"type\":\"gold\",\"amount\":20000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"20\":{\"xp\":11500,\"rewards\":[{\"type\":\"gold\",\"amount\":30000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"21\":{\"xp\":12000,\"rewards\":[{\"type\":\"gold\",\"amount\":30000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"22\":{\"xp\":12500,\"rewards\":[{\"type\":\"gold\",\"amount\":30000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"23\":{\"xp\":13000,\"rewards\":[{\"type\":\"gold\",\"amount\":30000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"24\":{\"xp\":13500,\"rewards\":[{\"type\":\"gold\",\"amount\":30000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"25\":{\"xp\":14000,\"rewards\":[{\"type\":\"gold\",\"amount\":30000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"26\":{\"xp\":14500,\"rewards\":[{\"type\":\"gold\",\"amount\":30000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"27\":{\"xp\":15000,\"rewards\":[{\"type\":\"gold\",\"amount\":30000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"28\":{\"xp\":15500,\"rewards\":[{\"type\":\"gold\",\"amount\":30000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"29\":{\"xp\":16000,\"rewards\":[{\"type\":\"gold\",\"amount\":30000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"30\":{\"xp\":16500,\"rewards\":[{\"type\":\"gold\",\"amount\":40000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"31\":{\"xp\":17000,\"rewards\":[{\"type\":\"gold\",\"amount\":40000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"32\":{\"xp\":17500,\"rewards\":[{\"type\":\"gold\",\"amount\":40000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"33\":{\"xp\":18000,\"rewards\":[{\"type\":\"gold\",\"amount\":40000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"34\":{\"xp\":18500,\"rewards\":[{\"type\":\"gold\",\"amount\":40000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"35\":{\"xp\":19000,\"rewards\":[{\"type\":\"gold\",\"amount\":40000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"36\":{\"xp\":19500,\"rewards\":[{\"type\":\"gold\",\"amount\":40000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"37\":{\"xp\":20000,\"rewards\":[{\"type\":\"gold\",\"amount\":40000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"38\":{\"xp\":20500,\"rewards\":[{\"type\":\"gold\",\"amount\":40000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"39\":{\"xp\":21000,\"rewards\":[{\"type\":\"gold\",\"amount\":40000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"40\":{\"xp\":21500,\"rewards\":[{\"type\":\"gold\",\"amount\":50000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"41\":{\"xp\":22000,\"rewards\":[{\"type\":\"gold\",\"amount\":50000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"42\":{\"xp\":22500,\"rewards\":[{\"type\":\"gold\",\"amount\":50000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"43\":{\"xp\":23000,\"rewards\":[{\"type\":\"gold\",\"amount\":50000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"resource\",\"refId\":6,\"amount\":1}]},\"44\":{\"xp\":23500,\"rewards\":[{\"type\":\"gold\",\"amount\":50000},{\"type\":\"crystals\",\"amount\":20},{\"type\":\"resource\",\"refId\":9,\"amount\":1},{\"type\":\"res",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "Remote configs loaded: Fri, 29 May 2026 14:41:34 GMT\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/images_resources_assets_all_14b997323a0a57fbc638a9d6ec90bfde.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "<b>>>> POST /startGame</b> {\"isMobile\":\"0\",\"isPortal\":\"0\"}\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/dashboard_assets_all_35b143dbaf051361f743bc9409aec257.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "<<< /startGame: {\"hero\":{\"offers\":[],\"progress\":{\"news\":{},\"spent\":{},\"avatars\":[],\"cardIds\":[13221],\"received\":{},\"purchases\":[],\"tutorStep\":\"\",\"isSignUpDone\":false,\"cardConfigIds\":[53],\"equipConfigIds\":[],\"trackResources\":{},\"isTutorCompleted\":false,\"isSignRewardsTaken\":false,\"situationalTutorSteps\":[],\"trackDoubles\":[9,0,0,0]},\"abTest\":{\"tag\":\"cdn_do\",\"group\":\"a\"},\"tower\":{\"wins\":0,\"maxId\":15,\"power\":50,\"slots\":{},\"enemies\":{},\"trophies\":0,\"currentId\":15,\"slotsLimit\":4,\"achievedIds\":[15]},\"quests\":{\"1\":{\"cId\":1,\"startAt\":1780149740965},\"2\":{\"cId\":2,\"startAt\":1780149740965},\"3\":{\"cId\":3,\"startAt\":1780149740965},\"4\":{\"cId\":4,\"startAt\":1780149740965},\"5\":{\"cId\":5,\"startAt\":1780149740965},\"6\":{\"cId\":6,\"startAt\":1780149740965},\"35\":{\"cId\":35,\"startAt\":1780149740965},\"45\":{\"cId\":45,\"startAt\":1780149740965},\"62\":{\"cId\":62,\"startAt\":1780149740965},\"76\":{\"cId\":76,\"startAt\":1780149740965},\"93\":{\"cId\":93,\"startAt\":1780149740965},\"109\":{\"cId\":109,\"startAt\":1780149740965},\"110\":{\"cId\":110,\"startAt\":1780149740965}},\"questsFinished\":{},\"questModes\":{},\"seasons\":{\"26\":{\"id\":26,\"maxLeague\":15,\"trophies\":0}},\"groupTower\":{\"power\":0,\"energy\":100,\"seasons\":{},\"countReroll\":0,\"currentEnemies\":[],\"energyRefillsUsed\":0},\"stickers\":{\"achievedIds\":[]},\"state\":{\"v\":1,\"meta\":{\"ip\":\"104.131.185.150\",\"os\":\"Linux 64\",\"lang\":\"en\"},\"clientId\":\"32d5b27e-948d-48a8-8d09-9ecd94b5b6af\",\"isPortal\":false,\"socialId\":\"-1\",\"offersNetId\":\"8c593cceb19653ea76f87094ab46d765984a75ff\"},\"battlePasses\":{},\"antiCheat\":{},\"decks\":{},\"campaign\":{\"lines\":{}},\"idle\":{\"level\":1,\"score\":0,\"joined\":false,\"countSlotsBuy\":0,\"blockedCardIds\":[]},\"city\":{\"achievedIds\":[],\"attemptCount\":5},\"crusade\":{\"achievedIds\":[],\"attemptCount\":5},\"cardCollections\":{\"score\":0,\"collected\":{},\"progressDone\":0},\"chat\":{},\"videoParts\":{\"progress\":{},\"achievedIds\":[]},\"eventSeasons\":{\"achievedIds\":[],\"contentEventInvites\":{}},\"contentEvents\":{},\"procedureEvents\":{},\"summon\":{},\"id\":1490,\"playerId\":1490,\"nickname\":\"guest1490\",\"avatar\":1,\"nicknameChangeCounter\":0,\"level\":1,\"xp\":0,\"gold\":10000,\"crystals\":50,\"createdAt\":\"2026-05-30T14:02:16.828Z\",\"updatedAt\":\"2026-05-30T14:02:20.965Z\",\"lastLoginAt\":\"2026-05-30T14:02:20.965Z\",\"isBanned\":false,\"isNonAdult\":false},\"cards\":[{\"adrBoosts\":{},\"abilitiesLevels\":{},\"id\":13221,\"configId\":53,\"heroId\":1490,\"level\":1,\"doubles\":9,\"isNew\":false,\"createdAt\":\"2026-05-30T14:02:16.830Z\",\"updatedAt\":\"2026-05-30T14:02:16.830Z\",\"abilities\":[]}],\"resources\":[],\"equip\":[],\"time\":1780149740969}\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/fonts_fb_1_assets_all_27a3dfa33daaf1040d10a4f99c55cf5d.bundle' successfully revalidated and served from the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/fonts_fb_2_assets_all_06b96ae2032c43fdfdac666f8a0c4b3b.bundle' successfully revalidated and served from the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/anims_shared_assets_all_d0bb31439adf5824eca3b5132aeead6e.bundle' successfully revalidated and served from the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity-origin.dirtyleague.com/orden-dev/StreamingAssets/aa/WebGL/fonts_assets_all_9ad9c00f2c4c663d80c455a4bbadfe3e.bundle' successfully revalidated and served from the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity-origin.dirtyleague.com/orden-dev/StreamingAssets/aa/WebGL/shared_assets_all_f6bb6468e3f468f1668a966593aeded0.bundle' successfully revalidated and served from the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity-origin.dirtyleague.com/orden-dev/StreamingAssets/aa/WebGL/7909da8820ce511cc30b936ff8d01707_monoscripts_e48cc566fb3945e6d8e8f34214989315.bundle' successfully revalidated and served from the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity-origin.dirtyleague.com/orden-dev/StreamingAssets/aa/WebGL/7909da8820ce511cc30b936ff8d01707_unitybuiltinassets_7ddd2b317208431d1dc649c3e0345f0f.bundle' successfully revalidated and served from the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/dialogues_assets_all_2a0648c5b199b436c104fa2554a15fcb.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AssetManager] Bundle 'tutor_assets_all' loaded in 1.8 sec. WasPaused: False",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 164058,
+      "lineNumber": 8,
+      "columnNumber": 164058
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/common_ui_assets_all_b3fbda10a48c1133569df332576e734e.bundle' successfully revalidated and served from the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/dashboard_assets_all_35b143dbaf051361f743bc9409aec257.bundle' successfully revalidated and served from the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AssetManager] Bundle 'sounds_assets_all' loaded in 2.3 sec. WasPaused: False",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 164058,
+      "lineNumber": 8,
+      "columnNumber": 164058
+    }
+  },
+  {
+    "type": "log",
+    "text": "Trying to get length of sound which is not loaded yet.",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 120264,
+      "lineNumber": 8,
+      "columnNumber": 120264
+    }
+  },
+  {
+    "type": "log",
+    "text": "Decode error: EncodingError: Unable to decode audio data",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 132309,
+      "lineNumber": 8,
+      "columnNumber": 132309
+    }
+  },
+  {
+    "type": "log",
+    "text": "Trying to get length of sound which is not loaded yet.",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 120264,
+      "lineNumber": 8,
+      "columnNumber": 120264
+    }
+  },
+  {
+    "type": "log",
+    "text": "PlatformGetStacktrace\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "error",
+    "text": "Loading FSB failed for audio clip \"TapUsual\".\n    at DebugStringToFile(DebugStringToFileData const&) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251895]:0x518dc3b)\n    at SoundHandle::Instance::UpdateLoadState() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[228938]:0x45ecb5f)\n    at SoundManager::Update() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[228949]:0x45ee653)\n    at AudioModule::Update() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[229035]:0x45f4ccf)\n    at InitializeAudioManagerCallbacks()::PostLateUpdateUpdateAudioRegistrator::Forward() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[229028]:0x45f45bd)\n    at ExecutePlayerLoop(NativePlayerLoopSystem*) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[246099]:0x4ffe4fa)\n    at ExecutePlayerLoop(NativePlayerLoopSystem*) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[246099]:0x4ffe56f)\n    at MainLoop() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251784]:0x5165a66)\n    at dynCall_v (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[252082]:0x519b2f7)\n    at https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:27842\n    at _JS_CallAsLongAsNoExceptionsSeen (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:27856)\n    at UpdateUnityFrame() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251785]:0x5165b7b)\n    at dynCall_v (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[252082]:0x519b2f7)\n    at browserIterationFunc (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:119059)\n    at callUserCallback (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:101421)\n    at Object.runIter (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:102788)\n    at Browser_mainLoop_runner (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:118585)\n\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39727,
+      "lineNumber": 8,
+      "columnNumber": 39727
+    }
+  },
+  {
+    "type": "log",
+    "text": "Invoking error handler due to\nEncodingError: Unable to decode audio data\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 4858,
+      "lineNumber": 0,
+      "columnNumber": 4858
+    }
+  },
+  {
+    "type": "log",
+    "text": "Decode error: EncodingError: Unable to decode audio data",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 132309,
+      "lineNumber": 8,
+      "columnNumber": 132309
+    }
+  },
+  {
+    "type": "log",
+    "text": "Trying to get length of sound which is not loaded yet.",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 120264,
+      "lineNumber": 8,
+      "columnNumber": 120264
+    }
+  },
+  {
+    "type": "log",
+    "text": "PlatformGetStacktrace\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "error",
+    "text": "Loading FSB failed for audio clip \"TapClose\".\n    at DebugStringToFile(DebugStringToFileData const&) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251895]:0x518dc3b)\n    at SoundHandle::Instance::UpdateLoadState() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[228938]:0x45ecb5f)\n    at SoundManager::Update() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[228949]:0x45ee653)\n    at AudioModule::Update() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[229035]:0x45f4ccf)\n    at InitializeAudioManagerCallbacks()::PostLateUpdateUpdateAudioRegistrator::Forward() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[229028]:0x45f45bd)\n    at ExecutePlayerLoop(NativePlayerLoopSystem*) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[246099]:0x4ffe4fa)\n    at ExecutePlayerLoop(NativePlayerLoopSystem*) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[246099]:0x4ffe56f)\n    at MainLoop() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251784]:0x5165a66)\n    at dynCall_v (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[252082]:0x519b2f7)\n    at https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:27842\n    at _JS_CallAsLongAsNoExceptionsSeen (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:27856)\n    at UpdateUnityFrame() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251785]:0x5165b7b)\n    at dynCall_v (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[252082]:0x519b2f7)\n    at browserIterationFunc (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:119059)\n    at callUserCallback (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:101421)\n    at Object.runIter (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:102788)\n    at Browser_mainLoop_runner (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:118585)\n\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39727,
+      "lineNumber": 8,
+      "columnNumber": 39727
+    }
+  },
+  {
+    "type": "log",
+    "text": "Invoking error handler due to\nEncodingError: Unable to decode audio data\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 4858,
+      "lineNumber": 0,
+      "columnNumber": 4858
+    }
+  },
+  {
+    "type": "log",
+    "text": "Decode error: EncodingError: Unable to decode audio data",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 132309,
+      "lineNumber": 8,
+      "columnNumber": 132309
+    }
+  },
+  {
+    "type": "log",
+    "text": "Trying to get length of sound which is not loaded yet.",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 120264,
+      "lineNumber": 8,
+      "columnNumber": 120264
+    }
+  },
+  {
+    "type": "log",
+    "text": "PlatformGetStacktrace\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "error",
+    "text": "Loading FSB failed for audio clip \"TapConfirm\".\n    at DebugStringToFile(DebugStringToFileData const&) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251895]:0x518dc3b)\n    at SoundHandle::Instance::UpdateLoadState() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[228938]:0x45ecb5f)\n    at SoundManager::Update() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[228949]:0x45ee653)\n    at AudioModule::Update() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[229035]:0x45f4ccf)\n    at InitializeAudioManagerCallbacks()::PostLateUpdateUpdateAudioRegistrator::Forward() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[229028]:0x45f45bd)\n    at ExecutePlayerLoop(NativePlayerLoopSystem*) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[246099]:0x4ffe4fa)\n    at ExecutePlayerLoop(NativePlayerLoopSystem*) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[246099]:0x4ffe56f)\n    at MainLoop() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251784]:0x5165a66)\n    at dynCall_v (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[252082]:0x519b2f7)\n    at https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:27842\n    at _JS_CallAsLongAsNoExceptionsSeen (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:27856)\n    at UpdateUnityFrame() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251785]:0x5165b7b)\n    at dynCall_v (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[252082]:0x519b2f7)\n    at browserIterationFunc (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:119059)\n    at callUserCallback (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:101421)\n    at Object.runIter (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:102788)\n    at Browser_mainLoop_runner (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:118585)\n\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39727,
+      "lineNumber": 8,
+      "columnNumber": 39727
+    }
+  },
+  {
+    "type": "log",
+    "text": "Invoking error handler due to\nEncodingError: Unable to decode audio data\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 4858,
+      "lineNumber": 0,
+      "columnNumber": 4858
+    }
+  },
+  {
+    "type": "log",
+    "text": "Decode error: EncodingError: Unable to decode audio data",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 132309,
+      "lineNumber": 8,
+      "columnNumber": 132309
+    }
+  },
+  {
+    "type": "log",
+    "text": "Trying to get length of sound which is not loaded yet.",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 120264,
+      "lineNumber": 8,
+      "columnNumber": 120264
+    }
+  },
+  {
+    "type": "log",
+    "text": "PlatformGetStacktrace\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "error",
+    "text": "Loading FSB failed for audio clip \"TapCard\".\n    at DebugStringToFile(DebugStringToFileData const&) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251895]:0x518dc3b)\n    at SoundHandle::Instance::UpdateLoadState() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[228938]:0x45ecb5f)\n    at SoundManager::Update() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[228949]:0x45ee653)\n    at AudioModule::Update() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[229035]:0x45f4ccf)\n    at InitializeAudioManagerCallbacks()::PostLateUpdateUpdateAudioRegistrator::Forward() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[229028]:0x45f45bd)\n    at ExecutePlayerLoop(NativePlayerLoopSystem*) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[246099]:0x4ffe4fa)\n    at ExecutePlayerLoop(NativePlayerLoopSystem*) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[246099]:0x4ffe56f)\n    at MainLoop() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251784]:0x5165a66)\n    at dynCall_v (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[252082]:0x519b2f7)\n    at https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:27842\n    at _JS_CallAsLongAsNoExceptionsSeen (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:27856)\n    at UpdateUnityFrame() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251785]:0x5165b7b)\n    at dynCall_v (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[252082]:0x519b2f7)\n    at browserIterationFunc (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:119059)\n    at callUserCallback (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:101421)\n    at Object.runIter (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:102788)\n    at Browser_mainLoop_runner (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:118585)\n\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39727,
+      "lineNumber": 8,
+      "columnNumber": 39727
+    }
+  },
+  {
+    "type": "log",
+    "text": "Invoking error handler due to\nEncodingError: Unable to decode audio data\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 4858,
+      "lineNumber": 0,
+      "columnNumber": 4858
+    }
+  },
+  {
+    "type": "log",
+    "text": "Decode error: EncodingError: Unable to decode audio data",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 132309,
+      "lineNumber": 8,
+      "columnNumber": 132309
+    }
+  },
+  {
+    "type": "log",
+    "text": "PlatformGetStacktrace\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "error",
+    "text": "Loading FSB failed for audio clip \"WindowAppear\".\n    at DebugStringToFile(DebugStringToFileData const&) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251895]:0x518dc3b)\n    at SoundHandle::Instance::UpdateLoadState() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[228938]:0x45ecb5f)\n    at SoundManager::Update() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[228949]:0x45ee653)\n    at AudioModule::Update() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[229035]:0x45f4ccf)\n    at InitializeAudioManagerCallbacks()::PostLateUpdateUpdateAudioRegistrator::Forward() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[229028]:0x45f45bd)\n    at ExecutePlayerLoop(NativePlayerLoopSystem*) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[246099]:0x4ffe4fa)\n    at ExecutePlayerLoop(NativePlayerLoopSystem*) (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[246099]:0x4ffe56f)\n    at MainLoop() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251784]:0x5165a66)\n    at dynCall_v (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[252082]:0x519b2f7)\n    at https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:27842\n    at _JS_CallAsLongAsNoExceptionsSeen (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:27856)\n    at UpdateUnityFrame() (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[251785]:0x5165b7b)\n    at dynCall_v (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.wasm.gz:wasm-function[252082]:0x519b2f7)\n    at browserIterationFunc (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:119059)\n    at callUserCallback (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:101421)\n    at Object.runIter (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:102788)\n    at Browser_mainLoop_runner (https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz:9:118585)\n\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39727,
+      "lineNumber": 8,
+      "columnNumber": 39727
+    }
+  },
+  {
+    "type": "log",
+    "text": "Invoking error handler due to\nEncodingError: Unable to decode audio data\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 4858,
+      "lineNumber": 0,
+      "columnNumber": 4858
+    }
+  },
+  {
+    "type": "log",
+    "text": "Main Tutor started\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AUTOTEST] {schemaVersion: 1, sequence: 1, timestampMs: 1780149743585, source: tutor, type: main_started}",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 19918,
+      "lineNumber": 8,
+      "columnNumber": 19918
+    }
+  },
+  {
+    "type": "log",
+    "text": "🟢🟢🟢 [Tutor] NEW STEP: BattleTower1\n",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 39799,
+      "lineNumber": 8,
+      "columnNumber": 39799
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AUTOTEST] {schemaVersion: 1, sequence: 2, timestampMs: 1780149743612, source: tutor, type: step_started}",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 19918,
+      "lineNumber": 8,
+      "columnNumber": 19918
+    }
+  },
+  {
+    "type": "log",
+    "text": "[AUTOTEST] {schemaVersion: 1, sequence: 3, timestampMs: 1780149743613, source: app, type: ready}",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.framework.js.gz",
+      "line": 8,
+      "column": 19918,
+      "lineNumber": 8,
+      "columnNumber": 19918
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/tutor_assets_all_5124aadca325a600d47e62df97a288b7.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/tutor_assets_all_5124aadca325a600d47e62df97a288b7.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  },
+  {
+    "type": "log",
+    "text": "[UnityCache] 'https://unity.dirtyleague.com/WebGL/la_dev_10_8_autotest/sounds_assets_all_9e7d54aa813fe1ccbc8da17b3a40e775.bundle' successfully downloaded and stored in the browser cache",
+    "location": {
+      "url": "https://unity-origin.dirtyleague.com/orden-dev/Build/la_dev_10_8_autotest.loader.js",
+      "line": 0,
+      "column": 6760,
+      "lineNumber": 0,
+      "columnNumber": 6760
+    }
+  }
+]

@@ -24,6 +24,43 @@ export type EventFilter = Partial<{
   dialog: string;
 }>;
 
+
+export type AgeGateDiagnostics = {
+  wasShown: boolean;
+  clicked: boolean;
+  clickCount: number;
+  overlayHiddenAfterClick?: boolean;
+};
+
+export type BrowserConsoleMessage = {
+  type: string;
+  text: string;
+  location?: {
+    url?: string;
+    lineNumber?: number;
+    columnNumber?: number;
+  };
+};
+
+export type FailedRequestDiagnostics = {
+  url: string;
+  method: string;
+  resourceType: string;
+  failureText: string;
+};
+
+export type PageDiagnostics = {
+  ageGate?: AgeGateDiagnostics;
+  consoleMessages: BrowserConsoleMessage[];
+  pageErrors: string[];
+  failedRequests: FailedRequestDiagnostics[];
+};
+
+export type BrowserLoggingOptions = {
+  liveConsole: boolean;
+  attachOnSuccess: boolean;
+};
+
 export type AutotestStore = {
   version: number;
   events: AutotestEvent[];

@@ -36,6 +36,12 @@ docker compose build
 docker compose run --rm smoke
 ```
 
+Recommended local dev command for the full tutorial flow:
+
+```bash
+docker compose --profile dev run --rm dev-tutor-walkthrough
+```
+
 Available services:
 
 - `playwright` runs the full suite.
@@ -45,6 +51,7 @@ Available services:
 - `dev` runs the full suite with `AUTOTEST_ENV=dev`.
 - `dev-smoke` runs smoke in `dev`.
 - `dev-tutor` runs tutor in `dev`.
+- `dev-tutor-walkthrough` runs the full tutor walkthrough in `dev`.
 - `prod` runs `@prod-safe` in `prod`.
 - `prod-release` runs `@release` in `prod`.
 
@@ -59,6 +66,7 @@ npm run docker:test:tutor
 npm run docker:test:dev
 npm run docker:test:dev:smoke
 npm run docker:test:dev:tutor
+npm run docker:test:dev:tutor:walkthrough
 npm run docker:test:prod
 npm run docker:test:prod:release
 ```
@@ -88,8 +96,20 @@ DEV_BASE_URL=https://dev-cdn.example.com/build_123/
 PROD_BASE_URL=https://prod-cdn.example.com/la_7_1/
 BUILD_URL=
 AUTOTEST_QUERY=
-PLAYWRIGHT_EXPECT_TUTOR=0
 PLAYWRIGHT_HEADLESS=1
+PLAYWRIGHT_BROWSER_CONSOLE_LIVE=0
+PLAYWRIGHT_BROWSER_LOGS_ON_SUCCESS=0
+PLAYWRIGHT_DEFAULT_TIMEOUT_MS=120000
+PLAYWRIGHT_NAVIGATION_TIMEOUT_MS=120000
+PLAYWRIGHT_READY_TIMEOUT_MS=180000
+PLAYWRIGHT_EVENT_TIMEOUT_MS=30000
+PLAYWRIGHT_POLL_INTERVAL_MS=200
+
+TUTOR_STEP_ID=BattleTower1
+TUTOR_CLICK_X=812
+TUTOR_CLICK_Y=642
+TUTOR_EXPECTED_EVENT=ClickContinueInMessage
+TUTOR_HIGHLIGHT_NAME=
 ```
 
 URL resolution rules:
@@ -100,6 +120,17 @@ URL resolution rules:
 4. `autotest=true` is always appended.
 
 Optional additional query parameters may be passed via `AUTOTEST_QUERY`, for example `customHeroId=1&customToken=abc`.
+
+Browser logging controls:
+
+- `PLAYWRIGHT_BROWSER_CONSOLE_LIVE=1` prints browser `console`, `pageerror`, and failed request logs into the test runner output.
+- `PLAYWRIGHT_BROWSER_LOGS_ON_SUCCESS=1` also attaches browser logs to the Playwright report for passed tests, not only failed ones.
+
+Key test milestones are always printed into the runner output by the `GameSession` facade, for example open, age-gate handling, `__autotest` detection, and `app.ready`.
+
+Polling controls:
+
+- `PLAYWRIGHT_POLL_INTERVAL_MS=200` controls how often the test checks for `window.__autotest` and expected autotest events.
 
 ## Commands
 
@@ -151,6 +182,10 @@ Current first-version coverage:
 - Tutor first-step smoke
 
 Current tutor scenarios are coordinate-based: Playwright performs real mouse clicks, while the client validates progress through structured autotest events.
+
+Tutor smoke is configured through `TUTOR_*` environment variables, so coordinates and expected tutor events can be changed without editing the test code. The default scenario expects `BattleTower1` and a click that emits `ClickContinueInMessage`.
+
+For a full tutorial run, use `tests/tutor.walkthrough.spec.ts`. The scenario is now defined in code in `src/scenarios/tutor/fullWalkthrough.ts`, because one `TutorStepId` may contain several user actions and it is easier to debug this flow in TypeScript than in a long JSON file. The draft walkthrough is assembled from `Assets/ScriptableObjects/tutor_config.asset`; `clickX` and `clickY` are still placeholders and must be filled with real coordinates from the target build.
 
 ## CI
 

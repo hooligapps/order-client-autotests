@@ -19,6 +19,7 @@
     "docker:test:dev": "docker compose --profile dev run --rm dev",
     "docker:test:dev:smoke": "docker compose --profile dev run --rm dev-smoke",
     "docker:test:dev:tutor": "docker compose --profile dev run --rm dev-tutor",
+    "docker:test:dev:tutor:walkthrough": "docker compose --profile dev run --rm dev-tutor-walkthrough",
     "docker:test:prod": "docker compose --profile prod run --rm prod",
     "docker:test:prod:release": "docker compose --profile prod run --rm prod-release"
   },

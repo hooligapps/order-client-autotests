@@ -58,6 +58,15 @@ services:
       AUTOTEST_ENV: dev
     command: ["npx", "playwright", "test", "--grep", "@tutor"]
 
+  dev-tutor-walkthrough:
+    <<: *playwright-common
+    profiles: ["dev"]
+    environment:
+      CI: ${CI:-0}
+      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS:-1}
+      AUTOTEST_ENV: dev
+    command: ["npx", "playwright", "test", "tests/tutor.walkthrough.spec.ts"]
+
   prod:
     <<: *playwright-common
     profiles: ["prod"]

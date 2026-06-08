@@ -48,14 +48,16 @@ export const env = {
   prodBaseUrl: readOptionalString("PROD_BASE_URL"),
   buildUrl: readOptionalString("BUILD_URL"),
   extraQuery: readOptionalString("AUTOTEST_QUERY"),
-  expectTutor: readBoolean("PLAYWRIGHT_EXPECT_TUTOR", false),
   headless: readBoolean("PLAYWRIGHT_HEADLESS", true),
+  browserConsoleLive: readBoolean("PLAYWRIGHT_BROWSER_CONSOLE_LIVE", false),
+  browserLogsOnSuccess: readBoolean("PLAYWRIGHT_BROWSER_LOGS_ON_SUCCESS", false),
   retries: readNumber("PLAYWRIGHT_RETRIES", process.env.CI ? 1 : 0),
   workers: readNumber("PLAYWRIGHT_WORKERS", 1),
-  defaultTimeoutMs: readNumber("PLAYWRIGHT_DEFAULT_TIMEOUT_MS", 30_000),
-  navigationTimeoutMs: readNumber("PLAYWRIGHT_NAVIGATION_TIMEOUT_MS", 60_000),
-  readyTimeoutMs: readNumber("PLAYWRIGHT_READY_TIMEOUT_MS", 60_000),
-  eventTimeoutMs: readNumber("PLAYWRIGHT_EVENT_TIMEOUT_MS", 20_000)
+  defaultTimeoutMs: readNumber("PLAYWRIGHT_DEFAULT_TIMEOUT_MS", 120_000),
+  navigationTimeoutMs: readNumber("PLAYWRIGHT_NAVIGATION_TIMEOUT_MS", 120_000),
+  readyTimeoutMs: readNumber("PLAYWRIGHT_READY_TIMEOUT_MS", 180_000),
+  eventTimeoutMs: readNumber("PLAYWRIGHT_EVENT_TIMEOUT_MS", 30_000),
+  pollIntervalMs: readNumber("PLAYWRIGHT_POLL_INTERVAL_MS", 200)
 };
 
 export function resolveBaseUrl(targetEnv = env.autotestEnv): string {

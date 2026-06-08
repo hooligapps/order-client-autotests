@@ -1,4 +1,5 @@
 import type { Page } from "@playwright/test";
+import { env } from "../config/env";
 import type { AutotestEvent, AutotestStore, EventFilter } from "../types/autotest";
 import { timeoutMessage } from "./waits";
 
@@ -18,7 +19,10 @@ export async function waitForAutotestStore(
       return !!store && Array.isArray(store.events);
     },
     undefined,
-    { timeout: timeoutMs }
+    {
+      timeout: timeoutMs,
+      polling: env.pollIntervalMs
+    }
   );
 
   return page.evaluate(() => window.__autotest as AutotestStore);
@@ -30,6 +34,13 @@ export async function getEvents(page: Page): Promise<AutotestEvent[]> {
 
 export async function getLastEvent(page: Page): Promise<AutotestEvent | null> {
   return page.evaluate(() => window.__autotest?.lastEvent ?? null);
+}
+
+export async function hasAutotestStore(page: Page): Promise<boolean> {
+  return page.evaluate(() => {
+    const store = window.__autotest;
+    return !!store && Array.isArray(store.events);
+  });
 }
 
 export async function hasEvent(page: Page, filter: EventFilter): Promise<boolean> {
@@ -55,7 +66,8 @@ export async function waitForEvent(
     },
     { currentFilter: filter },
     {
-      timeout: timeoutMs
+      timeout: timeoutMs,
+      polling: env.pollIntervalMs
     }
   );
 
