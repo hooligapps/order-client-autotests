@@ -13,10 +13,12 @@ import type {
 import { clickAt } from "../helpers/clicks";
 import {
   getEvents,
+  getLastEvent,
   hasAutotestStore,
   hasEvent,
   waitForAutotestStore,
-  waitForEvent
+  waitForEvent,
+  waitForEventAfter
 } from "../helpers/autotest";
 import { attachAutotestSnapshot } from "../helpers/reporting";
 import { buildAutotestUrl } from "../helpers/urls";
@@ -191,6 +193,14 @@ export class GameSession {
 
   async hasEvent(filter: EventFilter): Promise<boolean> {
     return hasEvent(this.page, filter);
+  }
+
+  async checkpoint(): Promise<number> {
+    return (await getLastEvent(this.page))?.sequence ?? 0;
+  }
+
+  async waitEventAfter(filter: EventFilter, afterSequence: number): Promise<AutotestEvent> {
+    return waitForEventAfter(this.page, filter, afterSequence, env.eventTimeoutMs);
   }
 
   async waitScreenOpened(screen: string): Promise<void> {

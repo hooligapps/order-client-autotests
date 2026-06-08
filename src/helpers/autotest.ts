@@ -80,3 +80,48 @@ export async function waitForEvent(
 
   return matchedEvent;
 }
+
+export async function waitForEventAfter(
+  page: Page,
+  filter: EventFilter,
+  afterSequence: number,
+  timeoutMs = 20_000
+): Promise<AutotestEvent> {
+  await waitForAutotestStore(page, timeoutMs);
+
+  await page.waitForFunction(
+    ({ currentFilter, minSequence }) => {
+      const events = window.__autotest?.events ?? [];
+      return events.some((event) => {
+        if ((event.sequence ?? 0) <= minSequence) {
+          return false;
+        }
+
+        return Object.entries(currentFilter).every(([key, expectedValue]) => {
+          return event[key] === expectedValue;
+        });
+      });
+    },
+    { currentFilter: filter, minSequence: afterSequence },
+    {
+      timeout: timeoutMs,
+      polling: env.pollIntervalMs
+    }
+  );
+
+  const events = await getEvents(page);
+  const matchedEvent = events.find((event) => {
+    return event.sequence > afterSequence && matchesFilter(event, filter);
+  });
+
+  if (!matchedEvent) {
+    throw new Error(
+      timeoutMessage(
+        `Event ${JSON.stringify(filter)} after sequence ${String(afterSequence)}`,
+        timeoutMs
+      )
+    );
+  }
+
+  return matchedEvent;
+}

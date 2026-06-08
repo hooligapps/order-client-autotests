@@ -9,21 +9,21 @@ export const introCoords = {
 } satisfies Record<string, Point>;
 
 export const tutorCoords = {
-  dashboard_battle_btn: { x: 893, y: 703 },
-  win_dialog_claim_btn: { x: 0, y: 0 },
+  dashboard_battle_btn: { x: 902, y: 707 },
+  win_dialog_claim_btn: { x: 1094, y: 648 },
 
-  battle_enter_cards_list: { x: 0, y: 0 },
-  battle_enter_fight_btn: { x: 0, y: 0 },
-  interact_match3BoosterBomb: { x: 0, y: 0 },
-  interact_match3BoosterFlash: { x: 0, y: 0 },
+  battle_enter_cards_list: { x: 359, y: 656 },
+  battle_enter_fight_btn: { x: 802, y: 491 },
+  interact_match3BoosterBomb: { x: 843, y: 402 },
+  interact_match3BoosterFlash: { x: 603, y: 402 },
 
-  dashboard_chat_btn: { x: 0, y: 0 },
-  chat_photo: { x: 0, y: 0 },
-  chat_close_btn: { x: 0, y: 0 },
+  dashboard_chat_btn: { x: 230, y: 694 },
+  chat_photo: { x: 726, y: 391 },
+  chat_close_btn: { x: 214, y: 69 },
 
-  tower_battle_btn: { x: 0, y: 0 },
-  interact_battleEnterGirlCard: { x: 0, y: 0 },
-  interact_firstBattlerWithAbility: { x: 0, y: 0 },
+  tower_battle_btn: { x: 810, y: 490 },
+  interact_battleEnterGirlCard: { x: 238, y: 658 },
+  interact_firstBattlerWithAbility: { x: 271, y: 458 },
   interact_chestReward: { x: 0, y: 0 },
 
   interact_readySlot: { x: 0, y: 0 },
@@ -53,6 +53,39 @@ export const tutorCoords = {
   dashboard_quests_btn: { x: 0, y: 0 }
 } satisfies Record<string, Point>;
 
+export const walkthroughCoords = {
+  battleTower1: {
+    match3Move1Start: { x: 678, y: 403 },
+    match3Move1End: { x: 680, y: 321 },
+    match3Move2Start: { x: 770, y: 401 },
+    match3Move2End: { x: 840, y: 404 },
+    continueMessage: { x: 1089, y: 415 },
+    match3Move3Start: { x: 923, y: 329 },
+    match3Move3End: { x: 920, y: 397 },
+    postWinContinue: { x: 960, y: 560 },
+    newGirlMessageContinue: { x: 921, y: 451 }
+  },
+  battleTower2: {
+    deckCard1: { x: 227, y: 661 },
+    deckCard2: { x: 359, y: 656 },
+    deckCard3: { x: 489, y: 656 },
+    fightButton: { x: 799, y: 491 },
+    match3Move1Start: { x: 766, y: 395 },
+    match3Move1End: { x: 842, y: 405 },
+    match3Move2Start: { x: 683, y: 406 },
+    match3Move2End: { x: 587, y: 403 },
+    continueMessage: { x: 897, y: 507 }
+  },
+  chat1: {
+    firstNewGirlClose: { x: 921, y: 452 },
+    secondNewGirlClose: { x: 921, y: 452 },
+    thirdNewGirlClose: { x: 837, y: 468 },
+    answer: { x: 949, y: 601 },
+    galleryClose: { x: 1403, y: 81 }
+  }
+} satisfies Record<string, Record<string, Point>>;
+
 export const tutorTimings = {
-  introSkipDelayMs: 1000
+  introSkipDelayMs: 1000,
+  chatAnswerSettleDelayMs: 1500
 };
