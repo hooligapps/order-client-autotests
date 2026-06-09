@@ -56,7 +56,7 @@ function parsePayload(payload: string | null | undefined): Record<string, string
 export class GameSession {
   private static readonly ageConfirmSelector = "#age-confirm-btn";
   private static readonly ageOverlaySelector = "#age-confirmation";
-  private static readonly actionDelayMs = 500;
+  private static readonly actionDelayMs = 150;
 
   private readonly ageGateDiagnostics: AgeGateDiagnostics = {
     wasShown: false,
@@ -68,6 +68,7 @@ export class GameSession {
   private readonly pageErrors: string[] = [];
   private readonly failedRequests: FailedRequestDiagnostics[] = [];
   private keyPointPrefix = "[game]";
+  private eventSegmentStartSequence = 0;
 
   constructor(private readonly page: Page) {}
 
@@ -99,7 +100,20 @@ export class GameSession {
     return `${details} seq=${String(event.sequence)}`;
   }
 
+  private effectiveAfterSequence(afterSequence = 0): number {
+    return Math.max(afterSequence, this.eventSegmentStartSequence);
+  }
+
   private async waitForFilter(filter: EventFilter, timeoutMs = env.eventTimeoutMs): Promise<AutotestEvent> {
+    const effectiveAfter = this.effectiveAfterSequence();
+
+    if (effectiveAfter > 0) {
+      this.logKeyPoint(`wait ${this.describeFilter(filter)} after=${String(effectiveAfter)} timeout=${String(timeoutMs)}ms`);
+      const event = await waitForEventAfter(this.page, filter, effectiveAfter, timeoutMs);
+      this.logKeyPoint(`got ${this.describeEvent(event)}`);
+      return event;
+    }
+
     this.logKeyPoint(`wait ${this.describeFilter(filter)} timeout=${String(timeoutMs)}ms`);
     const event = await waitForEvent(this.page, filter, timeoutMs);
     this.logKeyPoint(`got ${this.describeEvent(event)}`);
@@ -107,8 +121,9 @@ export class GameSession {
   }
 
   private async waitForFilterAfter(filter: EventFilter, afterSequence: number, timeoutMs = env.eventTimeoutMs): Promise<AutotestEvent> {
-    this.logKeyPoint(`wait ${this.describeFilter(filter)} after=${String(afterSequence)} timeout=${String(timeoutMs)}ms`);
-    const event = await waitForEventAfter(this.page, filter, afterSequence, timeoutMs);
+    const effectiveAfter = this.effectiveAfterSequence(afterSequence);
+    this.logKeyPoint(`wait ${this.describeFilter(filter)} after=${String(effectiveAfter)} timeout=${String(timeoutMs)}ms`);
+    const event = await waitForEventAfter(this.page, filter, effectiveAfter, timeoutMs);
     this.logKeyPoint(`got ${this.describeEvent(event)}`);
     return event;
   }
@@ -252,10 +267,15 @@ export class GameSession {
   }
 
   async getEvents(): Promise<AutotestEvent[]> {
-    return getEvents(this.page);
+    const events = await getEvents(this.page);
+    return events.filter((event) => event.sequence > this.eventSegmentStartSequence);
   }
 
   async hasEvent(filter: EventFilter): Promise<boolean> {
+    if (this.eventSegmentStartSequence > 0) {
+      return hasEventAfter(this.page, filter, this.eventSegmentStartSequence);
+    }
+
     return hasEvent(this.page, filter);
   }
 
@@ -263,8 +283,25 @@ export class GameSession {
     return (await getLastEvent(this.page))?.sequence ?? 0;
   }
 
+  async startEventSegment(afterSequence?: number, label?: string): Promise<number> {
+    const sequence = afterSequence ?? await this.checkpoint();
+    this.eventSegmentStartSequence = sequence;
+    this.logKeyPoint(`segment start after=${String(sequence)}${label ? ` label=${label}` : ""}`);
+
+    await this.page.evaluate((minSequence) => {
+      const store = window.__autotest;
+      if (!store?.events) {
+        return;
+      }
+
+      store.events = store.events.filter((event) => (event.sequence ?? 0) > minSequence);
+    }, sequence);
+
+    return sequence;
+  }
+
   async hasEventAfter(filter: EventFilter, afterSequence: number): Promise<boolean> {
-    return hasEventAfter(this.page, filter, afterSequence);
+    return hasEventAfter(this.page, filter, this.effectiveAfterSequence(afterSequence));
   }
 
   async waitEventAfter(filter: EventFilter, afterSequence: number): Promise<AutotestEvent> {
@@ -272,13 +309,14 @@ export class GameSession {
   }
 
   async waitAnyEventAfter(filters: EventFilter[], afterSequence: number, timeoutMs = env.eventTimeoutMs): Promise<AutotestEvent> {
-    this.logKeyPoint(`wait any after=${String(afterSequence)} timeout=${String(timeoutMs)}ms :: ${filters.map((filter) => this.describeFilter(filter)).join(" || ")}`);
+    const effectiveAfter = this.effectiveAfterSequence(afterSequence);
+    this.logKeyPoint(`wait any after=${String(effectiveAfter)} timeout=${String(timeoutMs)}ms :: ${filters.map((filter) => this.describeFilter(filter)).join(" || ")}`);
     const deadline = Date.now() + timeoutMs;
 
     while (Date.now() < deadline) {
       const events = await this.getEvents();
       const matched = events
-        .filter((event) => event.sequence > afterSequence && filters.some((filter) => matchesFilter(event, filter)))
+        .filter((event) => event.sequence > effectiveAfter && filters.some((filter) => matchesFilter(event, filter)))
         .sort((a, b) => a.sequence - b.sequence)[0];
 
       if (matched) {
@@ -331,14 +369,43 @@ export class GameSession {
 
     const payload = parsePayload(event.payload);
     const activation: BattleAbilityActivation = {
-      x: Number(payload.x),
-      y: Number(payload.y),
+      x: Number(payload.screenX ?? payload.x),
+      y: Number(payload.screenY ?? payload.y),
       ...(payload.cardConfigId ? { cardConfigId: Number(payload.cardConfigId) } : {}),
       ...(payload.abilityId ? { abilityId: Number(payload.abilityId) } : {})
     };
 
     this.logKeyPoint(
       `ability_activated x=${String(activation.x)} y=${String(activation.y)}`
+      + (activation.cardConfigId !== undefined ? ` cardConfigId=${String(activation.cardConfigId)}` : "")
+      + (activation.abilityId !== undefined ? ` abilityId=${String(activation.abilityId)}` : "")
+    );
+
+    return { event, activation };
+  }
+
+  async waitBattleAbilityReadyAfter(
+    afterSequence: number,
+    stepId?: string,
+    timeoutMs = env.eventTimeoutMs
+  ): Promise<{ event: AutotestEvent; activation: BattleAbilityActivation }> {
+    const event = await this.waitForFilterAfter({
+      source: "battle",
+      type: "ability_ready",
+      name: "HeroAbilityReady",
+      ...(stepId ? { stepId } : {})
+    }, afterSequence, timeoutMs);
+
+    const payload = parsePayload(event.payload);
+    const activation: BattleAbilityActivation = {
+      x: Number(payload.screenX ?? payload.x),
+      y: Number(payload.screenY ?? payload.y),
+      ...(payload.cardConfigId ? { cardConfigId: Number(payload.cardConfigId) } : {}),
+      ...(payload.abilityId ? { abilityId: Number(payload.abilityId) } : {})
+    };
+
+    this.logKeyPoint(
+      `ability_ready x=${String(activation.x)} y=${String(activation.y)}`
       + (activation.cardConfigId !== undefined ? ` cardConfigId=${String(activation.cardConfigId)}` : "")
       + (activation.abilityId !== undefined ? ` abilityId=${String(activation.abilityId)}` : "")
     );
@@ -373,6 +440,12 @@ export class GameSession {
     await clickAt(this.page, fromPoint.x, fromPoint.y);
     await this.page.waitForTimeout(50);
     await clickAt(this.page, toPoint.x, toPoint.y);
+  }
+
+  async clickUnityScreenPoint(x: number, y: number): Promise<void> {
+    const point = await this.mapUnityScreenToPageCoords(x, y);
+    this.logKeyPoint(`battle_click_point x=${point.x.toFixed(0)} y=${point.y.toFixed(0)} from unity x=${String(x)} y=${String(y)}`);
+    await clickAt(this.page, point.x, point.y);
   }
 
   async playBattleMoveAdviceAfter(afterSequence: number): Promise<{ event: AutotestEvent; advice: BattleMoveAdvice }> {
@@ -420,11 +493,14 @@ export class GameSession {
   }
 
   async waitTutorStepStarted(stepId: string): Promise<AutotestEvent> {
-    return this.waitForFilter({
+    const event = await this.waitForFilter({
       source: "tutor",
       type: "step_started",
       stepId
     }, env.eventTimeoutMs);
+
+    await this.startEventSegment(event.sequence, `step:${stepId}`);
+    return event;
   }
 
   async waitTutorReplicaShown(stepId?: string, afterSequence?: number): Promise<AutotestEvent> {

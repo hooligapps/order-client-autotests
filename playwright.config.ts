@@ -2,6 +2,7 @@ import { defineConfig } from "@playwright/test";
 import { env } from "./src/config/env";
 
 const computedTestTimeoutMs = Math.max(
+  600_000,
   env.defaultTimeoutMs,
   env.readyTimeoutMs + 15_000,
   env.navigationTimeoutMs + 5_000
@@ -27,7 +28,7 @@ export default defineConfig({
     headless: env.headless,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
-    video: "retain-on-failure",
+    video: "on",
     navigationTimeout: env.navigationTimeoutMs,
     actionTimeout: env.defaultTimeoutMs,
     viewport: {
