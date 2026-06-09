@@ -25,6 +25,28 @@ export type EventFilter = Partial<{
 }>;
 
 
+export type BattleMoveAdvice = {
+  fromCol: number;
+  fromRow: number;
+  toCol: number;
+  toRow: number;
+  fromScreenX: number;
+  fromScreenY: number;
+  toScreenX: number;
+  toScreenY: number;
+  fromType?: string;
+  toType?: string;
+  fromState?: string;
+  toState?: string;
+};
+
+export type BattleAbilityActivation = {
+  x: number;
+  y: number;
+  cardConfigId?: number;
+  abilityId?: number;
+};
+
 export type AgeGateDiagnostics = {
   wasShown: boolean;
   clicked: boolean;

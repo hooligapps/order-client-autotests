@@ -81,6 +81,17 @@ export async function waitForEvent(
   return matchedEvent;
 }
 
+export async function hasEventAfter(
+  page: Page,
+  filter: EventFilter,
+  afterSequence: number
+): Promise<boolean> {
+  const events = await getEvents(page);
+  return events.some((event) => {
+    return event.sequence > afterSequence && matchesFilter(event, filter);
+  });
+}
+
 export async function waitForEventAfter(
   page: Page,
   filter: EventFilter,

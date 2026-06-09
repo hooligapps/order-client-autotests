@@ -1,4 +1,5 @@
 import type { GameSession } from "../../fixtures/game.fixture";
+import type { AutotestEvent } from "../../types/autotest";
 import { introCoords, tutorCoords, tutorTimings, walkthroughCoords } from "./coords";
 import { bootstrapTutorWalkthrough } from "./walkthrough";
 
@@ -10,27 +11,45 @@ async function clickTarget(game: GameSession, target: keyof typeof tutorCoords):
   await click(game, tutorCoords[target]);
 }
 
-async function clickPair(
-  game: GameSession,
-  from: { x: number; y: number },
-  to: { x: number; y: number }
-): Promise<void> {
-  await click(game, from);
-  await click(game, to);
+type TutorStepStart = {
+  stepStarted: AutotestEvent,
+  firstReplica: AutotestEvent,
+};
+
+async function beginTutorStep(game: GameSession, stepId: string): Promise<TutorStepStart> {
+  const stepStarted = await game.waitTutorStepStarted(stepId);
+  const firstReplica = await game.waitTutorReplicaShown(stepId, stepStarted.sequence);
+  return { stepStarted, firstReplica };
 }
 
 async function skipIntroVideo(game: GameSession, name: string): Promise<void> {
   await game.waitTutorIntroStarted(name);
+  await game.waitMs(tutorTimings.introReadyDelayMs);
   await click(game, introCoords.video);
   await game.waitMs(tutorTimings.introSkipDelayMs);
   await click(game, introCoords.skip);
   await game.waitTutorIntroCompleted(name);
 }
 
-async function closeGirlNewInfoDialog(game: GameSession, point: { x: number; y: number }): Promise<void> {
-  const sequence = await game.checkpoint();
+async function closeGirlNewInfoDialog(
+  game: GameSession,
+  point: { x: number; y: number },
+  options?: { waitForOpen?: boolean }
+): Promise<void> {
+  if (options?.waitForOpen) {
+    const sequence = await game.checkpoint();
+    await game.waitEventAfter(
+      { source: "ui", type: "dialog_opened", dialog: "GirlNewInfoDialog" },
+      sequence
+    );
+  }
+
+  const closeSequence = await game.checkpoint();
   await click(game, point);
-  await game.waitEventAfter({ source: "tutor", type: "event_emitted", name: "DialogClosed" }, sequence);
+  await game.waitEventAfter(
+    { source: "ui", type: "dialog_closed", dialog: "GirlNewInfoDialog" },
+    closeSequence
+  );
 }
 
 async function clickChatAnswer(game: GameSession): Promise<void> {
@@ -38,12 +57,78 @@ async function clickChatAnswer(game: GameSession): Promise<void> {
   await game.waitMs(tutorTimings.chatAnswerSettleDelayMs);
 }
 
+async function clickChatAnswerAt(game: GameSession, point: { x: number; y: number }): Promise<void> {
+  await click(game, point);
+  await game.waitMs(tutorTimings.chatAnswerSettleDelayMs);
+}
+
+async function advanceChatUntilCompleted(game: GameSession, afterSequence: number): Promise<void> {
+  for (let i = 0; i < 12; i += 1) {
+    if (await game.hasEventAfter({ source: "tutor", type: "event_emitted", name: "ChatStoryCompleted" }, afterSequence)) {
+      return;
+    }
+
+    await clickChatAnswer(game);
+  }
+
+  await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ChatStoryCompleted" },
+    afterSequence
+  );
+}
+
+async function advanceChatAtUntilCompleted(
+  game: GameSession,
+  point: { x: number; y: number },
+  afterSequence: number
+): Promise<void> {
+  for (let i = 0; i < 12; i += 1) {
+    if (await game.hasEventAfter({ source: "tutor", type: "event_emitted", name: "ChatStoryCompleted" }, afterSequence)) {
+      return;
+    }
+
+    await clickChatAnswerAt(game, point);
+  }
+
+  await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ChatStoryCompleted" },
+    afterSequence
+  );
+}
+
+async function levelUpUntilComplete(
+  game: GameSession,
+  stepId: string,
+  point: { x: number; y: number },
+  maxClicks = 12
+): Promise<void> {
+  const afterSequence = await game.checkpoint();
+
+  for (let i = 0; i < maxClicks; i += 1) {
+    if (await game.hasEventAfter({ source: "tutor", type: "event_emitted", name: "GirlLevelUpComplete", stepId }, afterSequence)) {
+      return;
+    }
+
+    const sequence = await game.checkpoint();
+    await click(game, point);
+    await game.waitAnyEventAfter([
+      { source: "tutor", type: "event_emitted", name: "GirlLevelUp", stepId },
+      { source: "tutor", type: "event_emitted", name: "GirlLevelUpComplete", stepId }
+    ], sequence);
+  }
+
+  await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "GirlLevelUpComplete", stepId },
+    afterSequence
+  );
+}
+
 async function runBattleTower1(game: GameSession): Promise<void> {
   const coords = walkthroughCoords.battleTower1;
 
   await game.waitTutorStepStarted("BattleTower1");
-  await skipIntroVideo(game, "intro_1");
-  await skipIntroVideo(game, "intro_2");
+  // await skipIntroVideo(game, "intro_1");
+  // await skipIntroVideo(game, "intro_2");
 
   await game.waitTutorReplicaShown("BattleTower1");
   await game.waitTutorHighlightRequested("dashboard_battle_btn");
@@ -69,7 +154,8 @@ async function runBattleTower1(game: GameSession): Promise<void> {
   );
 
   sequence = await game.checkpoint();
-  await clickPair(game, coords.match3Move1Start, coords.match3Move1End);
+  await click(game, coords.match3Move1Start);
+  await click(game, coords.match3Move1End);
   const match1 = await game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "Match3HeroTurn" },
     sequence
@@ -88,7 +174,8 @@ async function runBattleTower1(game: GameSession): Promise<void> {
   );
 
   sequence = await game.checkpoint();
-  await clickPair(game, coords.match3Move2Start, coords.match3Move2End);
+  await click(game, coords.match3Move2Start);
+  await click(game, coords.match3Move2End);
   const match2 = await game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "Match3HeroTurn" },
     sequence
@@ -106,7 +193,8 @@ async function runBattleTower1(game: GameSession): Promise<void> {
   );
 
   sequence = await game.checkpoint();
-  await clickPair(game, coords.match3Move3Start, coords.match3Move3End);
+  await click(game, coords.match3Move3Start);
+  await click(game, coords.match3Move3End);
   const match3 = await game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "Match3HeroTurn" },
     sequence
@@ -146,7 +234,7 @@ async function runBattleTower1(game: GameSession): Promise<void> {
     winDialogClosed.sequence
   );
 
-  const firstGirlDialogOpened = await game.waitEventAfter(
+  await game.waitEventAfter(
     { source: "ui", type: "dialog_opened", dialog: "GirlNewInfoDialog" },
     winDialogClosed.sequence
   );
@@ -226,7 +314,8 @@ async function runBattleTower2(game: GameSession): Promise<void> {
   );
 
   sequence = await game.checkpoint();
-  await clickPair(game, coords.match3Move1Start, coords.match3Move1End);
+  await click(game, coords.match3Move1Start);
+  await click(game, coords.match3Move1End);
   const match1 = await game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "Match3HeroTurn" },
     sequence
@@ -268,7 +357,8 @@ async function runBattleTower2(game: GameSession): Promise<void> {
   );
 
   sequence = await game.checkpoint();
-  await clickPair(game, coords.match3Move2Start, coords.match3Move2End);
+  await click(game, coords.match3Move2Start);
+  await click(game, coords.match3Move2End);
   const match2 = await game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "Match3HeroTurn" },
     sequence
@@ -338,16 +428,17 @@ async function runBattleTower2(game: GameSession): Promise<void> {
 
 async function runChat1(game: GameSession): Promise<void> {
   await game.waitTutorStepStarted("Chat1");
-
-  await closeGirlNewInfoDialog(game, walkthroughCoords.chat1.thirdNewGirlClose);
-  const afterThirdGirlClose = await game.checkpoint();
-  const allGirlsClosed = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "AllNewGirlDialogsClosed" },
-    afterThirdGirlClose
+  const chat1Started = await game.checkpoint();
+  await game.waitEventAfter(
+    { source: "ui", type: "dialog_opened", dialog: "GirlNewInfoDialog" },
+    chat1Started
   );
+
+  const beforeThirdGirlClose = await game.checkpoint();
+  await closeGirlNewInfoDialog(game, walkthroughCoords.chat1.thirdNewGirlClose);
   const dashboardOpened = await game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "DashboardOpened" },
-    allGirlsClosed.sequence
+    beforeThirdGirlClose
   );
   await game.waitEventAfter(
     { source: "tutor", type: "replica_shown", stepId: "Chat1" },
@@ -367,10 +458,7 @@ async function runChat1(game: GameSession): Promise<void> {
   );
 
   const beforeChatAnswers = await game.checkpoint();
-  await clickChatAnswer(game);
-  await clickChatAnswer(game);
-  await clickChatAnswer(game);
-  await clickChatAnswer(game);
+  await advanceChatUntilCompleted(game, beforeChatAnswers);
 
   const storyCompleted = await game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "ChatStoryCompleted" },
@@ -418,65 +506,72 @@ async function runChat1(game: GameSession): Promise<void> {
 }
 
 async function runBattleTower3(game: GameSession): Promise<void> {
-  await game.waitTutorStepStarted("BattleTower3");
-  await game.waitTutorReplicaShown("BattleTower3");
-  await game.waitTutorHighlightRequested("dashboard_battle_btn");
+  const coords = walkthroughCoords.battleTower3;
+
+  const { firstReplica } = await beginTutorStep(game, "BattleTower3");
+  await game.waitTutorHighlightRequested("dashboard_battle_btn", "BattleTower3", firstReplica.sequence);
 
   let sequence = await game.checkpoint();
   await clickTarget(game, "dashboard_battle_btn");
   const towerClick = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "TowerClick" },
+    { source: "tutor", type: "event_emitted", name: "TowerClick", stepId: "BattleTower3" },
     sequence
   );
   const towerShown = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "TowerShown" },
+    { source: "tutor", type: "event_emitted", name: "TowerShown", stepId: "BattleTower3" },
     towerClick.sequence
   );
-  await game.waitEventAfter(
+  const towerReplica = await game.waitEventAfter(
     { source: "tutor", type: "replica_shown", stepId: "BattleTower3" },
     towerShown.sequence
   );
-  await game.waitTutorHighlightRequested("tower_battle_btn");
+  await game.waitEventAfter(
+    { source: "tutor", type: "highlight_requested", stepId: "BattleTower3", name: "tower_battle_btn" },
+    towerReplica.sequence
+  );
 
   sequence = await game.checkpoint();
   await clickTarget(game, "tower_battle_btn");
   const battleClick = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "BattleClick" },
+    { source: "tutor", type: "event_emitted", name: "BattleClick", stepId: "BattleTower3" },
     sequence
   );
   const battleEnterShown = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "BattleEnterDialogShown" },
+    { source: "tutor", type: "event_emitted", name: "BattleEnterDialogShown", stepId: "BattleTower3" },
     battleClick.sequence
   );
-  await game.waitEventAfter(
+  const battleEnterReplica = await game.waitEventAfter(
     { source: "tutor", type: "replica_shown", stepId: "BattleTower3" },
     battleEnterShown.sequence
   );
-  await game.waitTutorHighlightRequested("interact_battleEnterGirlCard");
+  await game.waitEventAfter(
+    { source: "tutor", type: "highlight_requested", stepId: "BattleTower3", name: "interact_battleEnterGirlCard" },
+    battleEnterReplica.sequence
+  );
 
   sequence = await game.checkpoint();
   await clickTarget(game, "interact_battleEnterGirlCard");
   const deckIsFull = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "DeckIsFull" },
+    { source: "tutor", type: "event_emitted", name: "DeckIsFull", stepId: "BattleTower3" },
     sequence
   );
   await game.waitEventAfter(
-    { source: "tutor", type: "replica_shown", stepId: "BattleTower3" },
+    { source: "tutor", type: "pointer_shown", stepId: "BattleTower3" },
     deckIsFull.sequence
   );
 
   sequence = await game.checkpoint();
   await clickTarget(game, "battle_enter_fight_btn");
   const battleStartLoading = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "BattleStartLoading" },
+    { source: "tutor", type: "event_emitted", name: "BattleStartLoading", stepId: "BattleTower3" },
     sequence
   );
   const battleStarted = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "BattleStarted" },
+    { source: "tutor", type: "event_emitted", name: "BattleStarted", stepId: "BattleTower3" },
     battleStartLoading.sequence
   );
   const abilityCharged = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "BattleAbilityCharged" },
+    { source: "tutor", type: "event_emitted", name: "BattleAbilityCharged", stepId: "BattleTower3" },
     battleStarted.sequence
   );
   await game.waitEventAfter(
@@ -487,16 +582,99 @@ async function runBattleTower3(game: GameSession): Promise<void> {
   sequence = await game.checkpoint();
   await clickTarget(game, "interact_firstBattlerWithAbility");
   const useAbility = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "UseBattleAbility" },
+    { source: "tutor", type: "event_emitted", name: "UseBattleAbility", stepId: "BattleTower3" },
     sequence
   );
+  await game.waitBattleAbilityActivatedAfter(useAbility.sequence, "BattleTower3");
   const abilityUsed = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "BattleAbilityUsed" },
+    { source: "tutor", type: "event_emitted", name: "BattleAbilityUsed", stepId: "BattleTower3" },
     useAbility.sequence
   );
-  await game.waitEventAfter(
+
+  let turnBoundary = abilityUsed.sequence;
+  let battleEnemyDefeated: number | null = null;
+
+  while (battleEnemyDefeated === null) {
+    const nextEvent = await game.waitAnyEventAfter([
+      { source: "battle", type: "move_advice", stepId: "BattleTower3" },
+      { source: "tutor", type: "replica_shown", stepId: "BattleTower3" },
+      { source: "tutor", type: "event_emitted", name: "BattleEnemyDefeated", stepId: "BattleTower3" }
+    ], turnBoundary);
+
+    const isBattleEnemyDefeated =
+      nextEvent.source === "tutor"
+      && nextEvent.type === "event_emitted"
+      && nextEvent.name === "BattleEnemyDefeated";
+
+    if (isBattleEnemyDefeated) {
+      battleEnemyDefeated = nextEvent.sequence;
+      break;
+    }
+
+    if (nextEvent.source === "tutor" && nextEvent.type === "replica_shown") {
+      sequence = await game.checkpoint();
+      await click(game, coords.continueMessage);
+      await game.waitEventAfter(
+        { source: "tutor", type: "event_emitted", name: "ClickContinueInMessage", stepId: "BattleTower3" },
+        sequence
+      );
+
+      const moveAdvice = await game.waitBattleMoveAdviceAfter(nextEvent.sequence);
+      await game.playBattleMoveAdvice(moveAdvice.advice);
+      const match = await game.waitEventAfter(
+        { source: "tutor", type: "event_emitted", name: "Match3HeroTurn", stepId: "BattleTower3" },
+        moveAdvice.event.sequence
+      );
+      turnBoundary = match.sequence;
+      continue;
+    }
+
+    const moveAdvice = await game.waitBattleMoveAdviceAfter(turnBoundary);
+    await game.playBattleMoveAdvice(moveAdvice.advice);
+    const match = await game.waitEventAfter(
+      { source: "tutor", type: "event_emitted", name: "Match3HeroTurn", stepId: "BattleTower3" },
+      moveAdvice.event.sequence
+    );
+    turnBoundary = match.sequence;
+  }
+
+  const stepSaved = await game.waitEventAfter(
     { source: "tutor", type: "step_saved", stepId: "BattleTower3" },
-    abilityUsed.sequence
+    battleEnemyDefeated
+  );
+  const winDialogOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "BattleWinDialogOpened", stepId: "BattleTower3" },
+    stepSaved.sequence
+  );
+  await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "BattleTower3" },
+    winDialogOpened.sequence
+  );
+
+  sequence = await game.checkpoint();
+  await click(game, coords.postWinContinue);
+  const postWinContinue = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ClickContinueInMessage", stepId: "BattleTower3" },
+    sequence
+  );
+  await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "BattleTower3" },
+    postWinContinue.sequence
+  );
+
+  sequence = await game.checkpoint();
+  await click(game, coords.claimButton);
+  const dialogClosed = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "BattleWinDialogClosed", stepId: "BattleTower3" },
+    sequence
+  );
+  await game.waitEventAfter(
+    { source: "tutor", type: "step_completed", stepId: "BattleTower3" },
+    dialogClosed.sequence
+  );
+  await game.waitEventAfter(
+    { source: "tutor", type: "step_started", stepId: "TowerChest" },
+    dialogClosed.sequence
   );
 }
 
@@ -504,238 +682,543 @@ async function runTowerChest(game: GameSession): Promise<void> {
   await game.waitTutorStepStarted("TowerChest");
   await game.waitTutorReplicaShown("TowerChest");
   await game.waitTutorHighlightRequested("interact_readySlot");
-  await click(game, tutorCoords.interact_readySlot);
-  await game.waitTutorEvent("SlotOpen");
 
-  await game.waitTutorReplicaShown("TowerChest");
-  await game.waitTutorHighlightRequested("rewards_claim_btn");
+  let sequence = await game.checkpoint();
+  await click(game, tutorCoords.interact_readySlot);
+  const slotOpen = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "SlotOpen", stepId: "TowerChest" },
+    sequence
+  );
+  const stepSaved = await game.waitEventAfter(
+    { source: "tutor", type: "step_saved", stepId: "TowerChest" },
+    slotOpen.sequence
+  );
+  const rewardsDialogOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "RewardsDialogOpened", stepId: "TowerChest" },
+    stepSaved.sequence
+  );
+  await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "TowerChest" },
+    rewardsDialogOpened.sequence
+  );
+
+  sequence = await game.checkpoint();
   await click(game, tutorCoords.rewards_claim_btn);
-  await game.waitTutorEvent("RewardsClaimed");
-  await game.waitTutorStepSaved("TowerChest");
-  await game.waitTutorStepCompleted("TowerChest");
+  const rewardsClaimed = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "RewardsClaimed", stepId: "TowerChest" },
+    sequence
+  );
+  await game.waitEventAfter(
+    { source: "tutor", type: "step_completed", stepId: "TowerChest" },
+    rewardsClaimed.sequence
+  );
 }
 
 async function runTowerWinsChest(game: GameSession): Promise<void> {
   await game.waitTutorStepStarted("TowerWinsChest");
   await game.waitTutorReplicaShown("TowerWinsChest");
   await game.waitTutorHighlightRequested("tower_wins_banner");
-  await click(game, tutorCoords.tower_wins_banner);
-  await game.waitTutorEvent("RewardsDialogOpened");
 
-  await game.waitTutorReplicaShown("TowerWinsChest");
-  await game.waitTutorHighlightRequested("rewards_claim_btn");
+  let sequence = await game.checkpoint();
+  await click(game, tutorCoords.tower_wins_banner);
+  const rewardsDialogOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "RewardsDialogOpened", stepId: "TowerWinsChest" },
+    sequence
+  );
+  const stepSaved = await game.waitEventAfter(
+    { source: "tutor", type: "step_saved", stepId: "TowerWinsChest" },
+    rewardsDialogOpened.sequence
+  );
+  await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "TowerWinsChest" },
+    stepSaved.sequence
+  );
+
+  sequence = await game.checkpoint();
   await click(game, tutorCoords.rewards_claim_btn);
-  await game.waitTutorEvent("RewardsClaimed");
-  await game.waitTutorStepSaved("TowerWinsChest");
-  await game.waitTutorStepCompleted("TowerWinsChest");
+  const rewardsClaimed = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "RewardsClaimed", stepId: "TowerWinsChest" },
+    sequence
+  );
+  await game.waitEventAfter(
+    { source: "tutor", type: "step_completed", stepId: "TowerWinsChest" },
+    rewardsClaimed.sequence
+  );
 }
 
 async function runLevelUpGirl(game: GameSession): Promise<void> {
-  await game.waitTutorStepStarted("LevelUpGirl");
-  await game.waitTutorReplicaShown("LevelUpGirl");
-  await game.waitTutorHighlightRequested("dashboard_girls_btn");
+  const { firstReplica: dashboardReplica } = await beginTutorStep(game, "LevelUpGirl");
+  await game.waitTutorHighlightRequested("dashboard_girls_btn", "LevelUpGirl", dashboardReplica.sequence);
   await click(game, tutorCoords.dashboard_girls_btn);
-  await game.waitTutorEvent("DashboardOpenGirls");
+  const girlsOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "DashboardOpenGirls", stepId: "LevelUpGirl" },
+    dashboardReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("LevelUpGirl");
-  await game.waitTutorHighlightRequested("interact_firstGirlCard");
+  const girlsReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "LevelUpGirl" },
+    girlsOpened.sequence
+  );
+  await game.waitTutorHighlightRequested("interact_firstGirlCard", "LevelUpGirl", girlsReplica.sequence);
   await click(game, tutorCoords.interact_firstGirlCard);
-  await game.waitTutorEvent("GirlInfoOpen");
+  const girlInfoOpen = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "GirlInfoOpen", stepId: "LevelUpGirl" },
+    girlsReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("LevelUpGirl");
-  await game.waitTutorHighlightRequested("girl_info_main_params");
+  const mainParamsReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "LevelUpGirl" },
+    girlInfoOpen.sequence
+  );
+  await game.waitTutorHighlightRequested("girl_info_main_params", "LevelUpGirl", mainParamsReplica.sequence);
   await click(game, tutorCoords.girl_info_main_params);
-  await game.waitTutorEvent("ClickContinueInMessage");
+  const mainParamsContinue = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ClickContinueInMessage", stepId: "LevelUpGirl" },
+    mainParamsReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("LevelUpGirl");
-  await game.waitTutorHighlightRequested("girl_info_battle_params");
+  const battleParamsReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "LevelUpGirl" },
+    mainParamsContinue.sequence
+  );
+  await game.waitTutorHighlightRequested("girl_info_battle_params", "LevelUpGirl", battleParamsReplica.sequence);
   await click(game, tutorCoords.girl_info_battle_params);
-  await game.waitTutorEvent("ClickContinueInMessage");
+  const battleParamsContinue = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ClickContinueInMessage", stepId: "LevelUpGirl" },
+    battleParamsReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("LevelUpGirl");
-  await game.waitTutorHighlightRequested("girl_info_abilities");
+  const abilitiesReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "LevelUpGirl" },
+    battleParamsContinue.sequence
+  );
+  await game.waitTutorHighlightRequested("girl_info_abilities", "LevelUpGirl", abilitiesReplica.sequence);
   await click(game, tutorCoords.girl_info_abilities);
-  await game.waitTutorEvent("ClickContinueInMessage");
+  const abilitiesContinue = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ClickContinueInMessage", stepId: "LevelUpGirl" },
+    abilitiesReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("LevelUpGirl");
-  await game.waitTutorHighlightRequested("girl_info_level_up_btn");
-  await click(game, tutorCoords.girl_info_level_up_btn);
-  await game.waitTutorEvent("GirlLevelUpComplete");
+  const levelUpReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "LevelUpGirl" },
+    abilitiesContinue.sequence
+  );
+  await game.waitTutorHighlightRequested("girl_info_level_up_btn", "LevelUpGirl", levelUpReplica.sequence);
+  await levelUpUntilComplete(game, "LevelUpGirl", tutorCoords.girl_info_level_up_btn);
 
-  await game.waitTutorReplicaShown("LevelUpGirl");
-  await game.waitTutorHighlightRequested("close_btn");
-  await click(game, tutorCoords.close_btn);
-  await game.waitTutorEvent("DialogClosed");
-  await game.waitTutorStepSaved("LevelUpGirl");
+  const closeReplica = await game.waitTutorReplicaShown("LevelUpGirl", abilitiesContinue.sequence);
+  await game.waitTutorHighlightRequested("close_btn", "LevelUpGirl", closeReplica.sequence);
+  await click(game, walkthroughCoords.levelUpGirl.closeButton);
+  await game.waitTutorEvent("DialogClosed", "LevelUpGirl", closeReplica.sequence);
   await game.waitTutorStepCompleted("LevelUpGirl");
 }
 
 async function runChat2(game: GameSession): Promise<void> {
-  await game.waitTutorStepStarted("Chat2");
-  await game.waitTutorReplicaShown("Chat2");
-  await game.waitTutorHighlightRequested("dashboard_chat_btn");
+  const { firstReplica: dashboardReplica } = await beginTutorStep(game, "Chat2");
+  await game.waitTutorHighlightRequested("dashboard_chat_btn", "Chat2", dashboardReplica.sequence);
   await click(game, tutorCoords.dashboard_chat_btn);
-  await game.waitTutorEvent("DashboardOpenChat");
+  const chatOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "DashboardOpenChat", stepId: "Chat2" },
+    dashboardReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("Chat2");
-  await game.waitTutorHighlightRequested("interact_firstChatBtn");
+  const chatReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "Chat2" },
+    chatOpened.sequence
+  );
+  await game.waitTutorHighlightRequested("interact_firstChatBtn", "Chat2", chatReplica.sequence);
   await click(game, tutorCoords.interact_firstChatBtn);
-  await game.waitTutorEvent("ChatDialogOpened");
-
-  await game.waitTutorReplicaShown("Chat2");
-  await click(game, introCoords.video);
-  await game.waitTutorEvent("ClickContinueInMessage");
+  const chatDialogOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ChatDialogOpened", stepId: "Chat2" },
+    chatReplica.sequence
+  );
   await game.waitTutorStepSaved("Chat2");
-  await game.waitTutorStepCompleted("Chat2");
+
+  const continueReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "Chat2" },
+    chatDialogOpened.sequence
+  );
+  await click(game, walkthroughCoords.chat2.continueMessage);
+  const continueClicked = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ClickContinueInMessage", stepId: "Chat2" },
+    continueReplica.sequence
+  );
+
+  await game.waitEventAfter(
+    { source: "tutor", type: "step_completed", stepId: "Chat2" },
+    continueClicked.sequence
+  );
+  const battleTower4Started = await game.waitEventAfter(
+    { source: "tutor", type: "step_started", stepId: "BattleTower4" },
+    continueClicked.sequence
+  );
+
+  await click(game, walkthroughCoords.chat2.closeButton);
+  await game.waitTutorEvent("DialogClosed", "BattleTower4", battleTower4Started.sequence);
+  await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ChatClosed", stepId: "BattleTower4" },
+    battleTower4Started.sequence
+  );
 }
 
 async function runBattleTower4(game: GameSession): Promise<void> {
-  await game.waitTutorStepStarted("BattleTower4");
-  await game.waitTutorReplicaShown("BattleTower4");
-  await game.waitTutorHighlightRequested("tower_battle_btn");
+  const { firstReplica: towerReplica } = await beginTutorStep(game, "BattleTower4");
+  await game.waitTutorHighlightRequested("tower_battle_btn", "BattleTower4", towerReplica.sequence);
   await click(game, tutorCoords.tower_battle_btn);
-  await game.waitTutorEvent("BattleClick");
+  const battleClickEvent = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "BattleClick", stepId: "BattleTower4" },
+    towerReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("BattleTower4");
-  await game.waitTutorHighlightRequested("battle_enter_fight_btn");
-  await click(game, tutorCoords.battle_enter_fight_btn);
-  await game.waitTutorEvent("BattleStartLoading");
+  const battleEnterReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "BattleTower4" },
+    battleClickEvent.sequence
+  );
+  const battleStartLoading = await game.checkpoint();
+  await click(game, walkthroughCoords.battleTower4.fightButton);
+  await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "BattleStartLoading", stepId: "BattleTower4" },
+    Math.max(battleEnterReplica.sequence, battleStartLoading)
+  );
 
-  await game.waitTutorReplicaShown("BattleTower4");
-  await game.waitTutorHighlightRequested("interact_sealReward");
-  await click(game, tutorCoords.interact_sealReward);
-  await game.waitTutorEvent("ClickContinueInMessage");
+  const battleStarted = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "BattleStarted", stepId: "BattleTower4" },
+    battleStartLoading
+  );
 
-  await game.waitTutorReplicaShown("BattleTower4");
-  await game.waitTutorHighlightRequested("rewards_claim_btn");
-  await click(game, tutorCoords.rewards_claim_btn);
-  await game.waitTutorEvent("RewardsClaimed");
-  await game.waitTutorStepSaved("BattleTower4");
-  await game.waitTutorStepCompleted("BattleTower4");
+  let turnBoundary = battleStarted.sequence;
+  let battleEnemyDefeated: number | null = null;
+
+  while (battleEnemyDefeated === null) {
+    const nextEvent = await game.waitAnyEventAfter([
+      { source: "battle", type: "move_advice", stepId: "BattleTower4" },
+      { source: "tutor", type: "event_emitted", name: "BattleEnemyDefeated", stepId: "BattleTower4" }
+    ], turnBoundary);
+
+    const isBattleEnemyDefeated =
+      nextEvent.source === "tutor"
+      && nextEvent.type === "event_emitted"
+      && nextEvent.name === "BattleEnemyDefeated";
+
+    if (isBattleEnemyDefeated) {
+      battleEnemyDefeated = nextEvent.sequence;
+      break;
+    }
+
+    const moveAdvice = await game.waitBattleMoveAdviceAfter(turnBoundary);
+    await game.playBattleMoveAdvice(moveAdvice.advice);
+    const match = await game.waitEventAfter(
+      { source: "tutor", type: "event_emitted", name: "Match3HeroTurn", stepId: "BattleTower4" },
+      moveAdvice.event.sequence
+    );
+    turnBoundary = match.sequence;
+  }
+
+  const stepSaved = await game.waitEventAfter(
+    { source: "tutor", type: "step_saved", stepId: "BattleTower4" },
+    battleEnemyDefeated
+  );
+  const winDialogOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "BattleWinDialogOpened", stepId: "BattleTower4" },
+    stepSaved.sequence
+  );
+
+  let sequence = await game.checkpoint();
+  await click(game, walkthroughCoords.battleTower4.winDialogClose);
+  const dialogClosed = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "BattleWinDialogClosed", stepId: "BattleTower4" },
+    sequence
+  );
+
+  const sealReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "BattleTower4" },
+    dialogClosed.sequence
+  );
+  await game.waitTutorHighlightRequested("interact_sealReward", "BattleTower4", sealReplica.sequence);
+  await click(game, walkthroughCoords.battleTower4.sealContinue);
+  const sealContinue = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ClickContinueInMessage", stepId: "BattleTower4" },
+    sealReplica.sequence
+  );
+
+  await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "BattleTower4" },
+    sealContinue.sequence
+  );
+  sequence = await game.checkpoint();
+  await click(game, walkthroughCoords.battleTower4.rewardsClaim);
+  await game.waitTutorEvent("RewardsClaimed", "BattleTower4", sequence);
+  await game.waitEventAfter(
+    { source: "tutor", type: "step_completed", stepId: "BattleTower4" },
+    sequence
+  );
 }
 
 async function runSummonPremium(game: GameSession): Promise<void> {
-  await game.waitTutorStepStarted("SummonPremium");
-  await game.waitTutorReplicaShown("SummonPremium");
-  await game.waitTutorHighlightRequested("summon_btn");
+  const { firstReplica: summonReplica } = await beginTutorStep(game, "SummonPremium");
+  await game.waitTutorHighlightRequested("summon_btn", "SummonPremium", summonReplica.sequence);
   await click(game, tutorCoords.summon_btn);
-  await game.waitTutorEvent("SummonClicked");
+  const summonClicked = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "SummonClicked", stepId: "SummonPremium" },
+    summonReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("SummonPremium");
-  await game.waitTutorHighlightRequested("summon_open_one_btn");
+  const summonOpenReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "SummonPremium" },
+    summonClicked.sequence
+  );
+  await game.waitTutorHighlightRequested("summon_open_one_btn", "SummonPremium", summonOpenReplica.sequence);
+  const summonBuy = await game.checkpoint();
   await click(game, tutorCoords.summon_open_one_btn);
-  await game.waitTutorEvent("SummonBuy");
+  await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "SummonBuy", stepId: "SummonPremium" },
+    summonBuy
+  );
 
-  await game.waitTutorReplicaShown("SummonPremium");
-  await game.waitTutorHighlightRequested("close_btn");
-  await click(game, tutorCoords.close_btn);
-  await game.waitTutorEvent("DialogClosed");
-  await game.waitTutorStepSaved("SummonPremium");
+  await closeGirlNewInfoDialog(game, walkthroughCoords.summonPremium.firstNewGirlClose, { waitForOpen: true });
+  await closeGirlNewInfoDialog(game, walkthroughCoords.summonPremium.secondNewGirlClose, { waitForOpen: true });
+
+  const closeReplica = await game.waitTutorReplicaShown("SummonPremium", summonBuy);
+  await game.waitTutorHighlightRequested("close_btn", "SummonPremium", closeReplica.sequence);
+  await click(game, walkthroughCoords.summonPremium.closeButton);
+  await game.waitTutorEvent("DialogClosed", "SummonPremium", closeReplica.sequence);
   await game.waitTutorStepCompleted("SummonPremium");
 }
 
 async function runBattleCampaign1(game: GameSession): Promise<void> {
-  await game.waitTutorStepStarted("BattleCampaign1");
+  const { firstReplica } = await beginTutorStep(game, "BattleCampaign1");
+  await click(game, walkthroughCoords.battleCampaign1.continueMessage);
+  const firstContinue = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ClickContinueInMessage", stepId: "BattleCampaign1" },
+    firstReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("BattleCampaign1");
-  await click(game, introCoords.video);
-  await game.waitTutorEvent("ClickContinueInMessage");
+  const secondReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "BattleCampaign1" },
+    firstContinue.sequence
+  );
+  await click(game, walkthroughCoords.battleCampaign1.continueMessage);
+  const secondContinue = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ClickContinueInMessage", stepId: "BattleCampaign1" },
+    secondReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("BattleCampaign1");
-  await click(game, introCoords.video);
-  await game.waitTutorEvent("ClickContinueInMessage");
-
-  await game.waitTutorReplicaShown("BattleCampaign1");
-  await game.waitTutorHighlightRequested("dashboard_modes_btn");
+  const modesReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "BattleCampaign1" },
+    secondContinue.sequence
+  );
+  await game.waitTutorHighlightRequested("dashboard_modes_btn", "BattleCampaign1", modesReplica.sequence);
   await click(game, tutorCoords.dashboard_modes_btn);
-  await game.waitTutorEvent("ModesButtonClicked");
+  const modesClicked = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ModesButtonClicked", stepId: "BattleCampaign1" },
+    modesReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("BattleCampaign1");
-  await game.waitTutorHighlightRequested("dashboard_campaign_btn");
+  const campaignReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "BattleCampaign1" },
+    modesClicked.sequence
+  );
+  await game.waitTutorHighlightRequested("dashboard_campaign_btn", "BattleCampaign1", campaignReplica.sequence);
   await click(game, tutorCoords.dashboard_campaign_btn);
-  await game.waitTutorEvent("CampaignOpen");
+  const campaignOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "CampaignOpen", stepId: "BattleCampaign1" },
+    campaignReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("BattleCampaign1");
-  await game.waitTutorHighlightRequested("first_campaign_btn");
+  const startReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "BattleCampaign1" },
+    campaignOpened.sequence
+  );
+  await game.waitTutorHighlightRequested("first_campaign_btn", "BattleCampaign1", startReplica.sequence);
   await click(game, tutorCoords.first_campaign_btn);
-  await game.waitTutorEvent("CampaignClickStart");
+  const campaignStart = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "CampaignClickStart", stepId: "BattleCampaign1" },
+    startReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("BattleCampaign1");
-  await game.waitTutorHighlightRequested("pick_best_btn");
+  const pickBestReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "BattleCampaign1" },
+    campaignStart.sequence
+  );
+  await game.waitTutorHighlightRequested("pick_best_btn", "BattleCampaign1", pickBestReplica.sequence);
   await click(game, tutorCoords.pick_best_btn);
-  await game.waitTutorEvent("PickBest");
+  const pickBest = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "PickBest", stepId: "BattleCampaign1" },
+    pickBestReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("BattleCampaign1");
-  await game.waitTutorHighlightRequested("battle_enter_fight_btn");
-  await click(game, tutorCoords.battle_enter_fight_btn);
-  await game.waitTutorEvent("BattleStartLoading");
-  await game.waitTutorStepSaved("BattleCampaign1");
-  await game.waitTutorStepCompleted("BattleCampaign1");
+  const fightReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "BattleCampaign1" },
+    pickBest.sequence
+  );
+  const battleStartLoading = await game.checkpoint();
+  await click(game, walkthroughCoords.battleCampaign1.fightButton);
+  await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "BattleStartLoading", stepId: "BattleCampaign1" },
+    Math.max(fightReplica.sequence, battleStartLoading)
+  );
+
+  const battleStarted = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "BattleStarted", stepId: "BattleCampaign1" },
+    battleStartLoading
+  );
+
+  let turnBoundary = battleStarted.sequence;
+  let battleEnemyDefeated: number | null = null;
+
+  while (battleEnemyDefeated === null) {
+    const nextEvent = await game.waitAnyEventAfter([
+      { source: "battle", type: "move_advice", stepId: "BattleCampaign1" },
+      { source: "tutor", type: "event_emitted", name: "BattleEnemyDefeated", stepId: "BattleCampaign1" }
+    ], turnBoundary);
+
+    const isBattleEnemyDefeated =
+      nextEvent.source === "tutor"
+      && nextEvent.type === "event_emitted"
+      && nextEvent.name === "BattleEnemyDefeated";
+
+    if (isBattleEnemyDefeated) {
+      battleEnemyDefeated = nextEvent.sequence;
+      break;
+    }
+
+    const moveAdvice = await game.waitBattleMoveAdviceAfter(turnBoundary);
+    await game.playBattleMoveAdvice(moveAdvice.advice);
+    const match = await game.waitEventAfter(
+      { source: "tutor", type: "event_emitted", name: "Match3HeroTurn", stepId: "BattleCampaign1" },
+      moveAdvice.event.sequence
+    );
+    turnBoundary = match.sequence;
+  }
+
+  const stepSaved = await game.waitEventAfter(
+    { source: "tutor", type: "step_saved", stepId: "BattleCampaign1" },
+    battleEnemyDefeated
+  );
+  const stepCompleted = await game.waitEventAfter(
+    { source: "tutor", type: "step_completed", stepId: "BattleCampaign1" },
+    stepSaved.sequence
+  );
+  const winDialogOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "BattleWinDialogOpened", stepId: "BattleCampaign1" },
+    stepCompleted.sequence
+  );
+
+  await click(game, walkthroughCoords.battleCampaign1.winDialogClose);
+  await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "BattleWinDialogClosed", stepId: "BattleCampaign1" },
+    winDialogOpened.sequence
+  );
 }
 
 async function runChat3(game: GameSession): Promise<void> {
-  await game.waitTutorStepStarted("Chat3");
-  await game.waitTutorReplicaShown("Chat3");
-  await game.waitTutorHighlightRequested("dashboard_chat_btn");
+  const { firstReplica: dashboardReplica } = await beginTutorStep(game, "Chat3");
+  await game.waitTutorHighlightRequested("dashboard_chat_btn", "Chat3", dashboardReplica.sequence);
   await click(game, tutorCoords.dashboard_chat_btn);
-  await game.waitTutorEvent("DashboardOpenChat");
+  const chatOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "DashboardOpenChat", stepId: "Chat3" },
+    dashboardReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("Chat3");
-  await game.waitTutorHighlightRequested("interact_chatGirl21");
+  const girlReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "Chat3" },
+    chatOpened.sequence
+  );
+  await game.waitTutorHighlightRequested("interact_chatGirl21", "Chat3", girlReplica.sequence);
   await click(game, tutorCoords.interact_chatGirl21);
-  await game.waitTutorEvent("ChatDialogOpened");
+  const chatDialogOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ChatDialogOpened", stepId: "Chat3" },
+    girlReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("Chat3");
-  await game.waitTutorHighlightRequested("chat_photo");
+  const beforeChatAnswers = await game.checkpoint();
+  await advanceChatAtUntilCompleted(game, walkthroughCoords.chat3.answer, beforeChatAnswers);
+
+  const storyCompleted = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ChatStoryCompleted", stepId: "Chat3" },
+    beforeChatAnswers
+  );
+  await game.waitEventAfter(
+    { source: "tutor", type: "step_saved", stepId: "Chat3" },
+    storyCompleted.sequence
+  );
+  const photoReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "Chat3" },
+    chatDialogOpened.sequence
+  );
+  await game.waitTutorHighlightRequested("chat_photo", "Chat3", photoReplica.sequence);
   await click(game, tutorCoords.chat_photo);
-  await game.waitTutorEvent("GalleryButtonClicked");
+  const photoOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "PhotoOpened", stepId: "Chat3" },
+    photoReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("Chat3");
-  await game.waitTutorHighlightRequested("chat_close_btn");
-  await click(game, tutorCoords.chat_close_btn);
-  await game.waitTutorEvent("ChatClosed");
-  await game.waitTutorStepSaved("Chat3");
+  await click(game, walkthroughCoords.chat3.galleryClose);
+  const photoClosed = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "PhotoClosed", stepId: "Chat3" },
+    photoOpened.sequence
+  );
+
+  await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "Chat3" },
+    photoClosed.sequence
+  );
+  await click(game, walkthroughCoords.chat3.closeButton);
+  await game.waitTutorEvent("ChatClosed", "Chat3", photoClosed.sequence);
   await game.waitTutorStepCompleted("Chat3");
 }
 
 async function runLevelUpGirl2(game: GameSession): Promise<void> {
-  await game.waitTutorStepStarted("LevelUpGirl2");
-  await game.waitTutorReplicaShown("LevelUpGirl2");
-  await game.waitTutorHighlightRequested("dashboard_girls_btn");
-  await click(game, tutorCoords.dashboard_girls_btn);
-  await game.waitTutorEvent("DashboardOpenGirls");
+  const { firstReplica: dashboardReplica } = await beginTutorStep(game, "LevelUpGirl2");
+  await game.waitTutorHighlightRequested("dashboard_girls_btn", "LevelUpGirl2", dashboardReplica.sequence);
+  await click(game, walkthroughCoords.levelUpGirl2.dashboardGirlsButton);
+  const girlsOpened = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "DashboardOpenGirls", stepId: "LevelUpGirl2" },
+    dashboardReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("LevelUpGirl2");
-  await game.waitTutorHighlightRequested("interact_firstGirlCard");
-  await click(game, tutorCoords.interact_firstGirlCard);
-  await game.waitTutorEvent("GirlInfoOpen");
+  const girlsReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "LevelUpGirl2" },
+    girlsOpened.sequence
+  );
+  await game.waitTutorHighlightRequested("interact_firstGirlCard", "LevelUpGirl2", girlsReplica.sequence);
+  await click(game, walkthroughCoords.levelUpGirl2.firstGirlCard);
+  const girlInfoOpen = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "GirlInfoOpen", stepId: "LevelUpGirl2" },
+    girlsReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("LevelUpGirl2");
-  await game.waitTutorHighlightRequested("girl_info_level_up_btn");
-  await click(game, tutorCoords.girl_info_level_up_btn);
-  await game.waitTutorEvent("GirlLevelUpComplete");
+  const levelUpReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "LevelUpGirl2" },
+    girlInfoOpen.sequence
+  );
+  await game.waitTutorHighlightRequested("girl_info_level_up_btn", "LevelUpGirl2", levelUpReplica.sequence);
+  await levelUpUntilComplete(game, "LevelUpGirl2", walkthroughCoords.levelUpGirl2.levelUpButton);
 
-  await game.waitTutorReplicaShown("LevelUpGirl2");
-  await game.waitTutorHighlightRequested("close_btn");
-  await click(game, tutorCoords.close_btn);
-  await game.waitTutorEvent("DialogClosed");
-  await game.waitTutorStepSaved("LevelUpGirl2");
+  const closeReplica = await game.waitTutorReplicaShown("LevelUpGirl2", girlInfoOpen.sequence);
+  await game.waitTutorHighlightRequested("close_btn", "LevelUpGirl2", closeReplica.sequence);
+  await click(game, walkthroughCoords.levelUpGirl2.closeButton);
+  await game.waitTutorEvent("DialogClosed", "LevelUpGirl2", closeReplica.sequence);
   await game.waitTutorStepCompleted("LevelUpGirl2");
 }
 
 async function runLastMessage(game: GameSession): Promise<void> {
-  await game.waitTutorStepStarted("LastMessage");
+  const { firstReplica } = await beginTutorStep(game, "LastMessage");
+  await click(game, walkthroughCoords.lastMessage.continueMessage);
+  const continueClicked = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ClickContinueInMessage", stepId: "LastMessage" },
+    firstReplica.sequence
+  );
 
-  await game.waitTutorReplicaShown("LastMessage");
-  await click(game, introCoords.video);
-  await game.waitTutorEvent("ClickContinueInMessage");
-
-  await game.waitTutorReplicaShown("LastMessage");
-  await game.waitTutorHighlightRequested("dashboard_quests_btn");
+  const questsReplica = await game.waitEventAfter(
+    { source: "tutor", type: "replica_shown", stepId: "LastMessage" },
+    continueClicked.sequence
+  );
+  await game.waitTutorHighlightRequested("dashboard_quests_btn", "LastMessage", questsReplica.sequence);
   await click(game, tutorCoords.dashboard_quests_btn);
-  await game.waitTutorEvent("QuestsClicked");
-  await game.waitTutorStepSaved("LastMessage");
+  await game.waitTutorEvent("QuestsClicked", "LastMessage", questsReplica.sequence);
   await game.waitTutorStepCompleted("LastMessage");
+  await game.waitTutorCompleted();
 }
 
 export async function runFullTutorWalkthrough(game: GameSession): Promise<void> {
