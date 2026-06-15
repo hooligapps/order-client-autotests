@@ -47,6 +47,12 @@ export type BattleAbilityActivation = {
   abilityId?: number;
 };
 
+export type ChatAnswerTarget = {
+  x: number;
+  y: number;
+  answerIndex?: number;
+};
+
 export type AgeGateDiagnostics = {
   wasShown: boolean;
   clicked: boolean;

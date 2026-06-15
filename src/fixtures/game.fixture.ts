@@ -6,6 +6,7 @@ import type {
   AutotestEvent,
   BattleAbilityActivation,
   BattleMoveAdvice,
+  ChatAnswerTarget,
   BrowserLoggingOptions,
   BrowserConsoleMessage,
   EventFilter,
@@ -304,8 +305,8 @@ export class GameSession {
     return hasEventAfter(this.page, filter, this.effectiveAfterSequence(afterSequence));
   }
 
-  async waitEventAfter(filter: EventFilter, afterSequence: number): Promise<AutotestEvent> {
-    return this.waitForFilterAfter(filter, afterSequence, env.eventTimeoutMs);
+  async waitEventAfter(filter: EventFilter, afterSequence: number, timeoutMs = env.eventTimeoutMs): Promise<AutotestEvent> {
+    return this.waitForFilterAfter(filter, afterSequence, timeoutMs);
   }
 
   async waitAnyEventAfter(filters: EventFilter[], afterSequence: number, timeoutMs = env.eventTimeoutMs): Promise<AutotestEvent> {
@@ -382,6 +383,33 @@ export class GameSession {
     );
 
     return { event, activation };
+  }
+
+  async waitChatAnswerReadyAfter(
+    afterSequence: number,
+    stepId?: string,
+    timeoutMs = env.eventTimeoutMs
+  ): Promise<{ event: AutotestEvent; target: ChatAnswerTarget }> {
+    const event = await this.waitForFilterAfter({
+      source: "chat",
+      type: "answer_ready",
+      name: "ChatAnswerReady",
+      ...(stepId ? { stepId } : {})
+    }, afterSequence, timeoutMs);
+
+    const payload = parsePayload(event.payload);
+    const target: ChatAnswerTarget = {
+      x: Number(payload.screenX ?? payload.x),
+      y: Number(payload.screenY ?? payload.y),
+      ...(payload.answerIndex ? { answerIndex: Number(payload.answerIndex) } : {})
+    };
+
+    this.logKeyPoint(
+      `chat_answer_ready x=${String(target.x)} y=${String(target.y)}`
+      + (target.answerIndex !== undefined ? ` answerIndex=${String(target.answerIndex)}` : "")
+    );
+
+    return { event, target };
   }
 
   async waitBattleAbilityReadyAfter(
