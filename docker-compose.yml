@@ -1,80 +1,77 @@
-x-playwright-common: &playwright-common
-  image: order-client-autotests:local
-  build:
-    context: .
-    dockerfile: Dockerfile
-  working_dir: /app
-  env_file:
-    - .env
-  environment:
-    CI: ${CI}
-    PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
-    AUTOTEST_ENV: ${AUTOTEST_ENV}
-  volumes:
-    - ./playwright-report:/app/playwright-report
-    - ./test-results:/app/test-results
+version: "2.4"
 
 services:
   playwright:
-    <<: *playwright-common
+    image: order-client-autotests:local
+    build: .
+    working_dir: /app
+    env_file:
+      - .env
+    environment:
+      CI: ${CI}
+      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
+      AUTOTEST_ENV: ${AUTOTEST_ENV}
+    volumes:
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results
     command: ["npx", "playwright", "test"]
 
   smoke:
-    <<: *playwright-common
+    image: order-client-autotests:local
+    build: .
+    working_dir: /app
+    env_file:
+      - .env
+    environment:
+      CI: ${CI}
+      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
+      AUTOTEST_ENV: ${AUTOTEST_ENV}
+    volumes:
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results
     command: ["npx", "playwright", "test", "--grep", "@smoke"]
 
   release:
-    <<: *playwright-common
+    image: order-client-autotests:local
+    build: .
+    working_dir: /app
+    env_file:
+      - .env
+    environment:
+      CI: ${CI}
+      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
+      AUTOTEST_ENV: ${AUTOTEST_ENV}
+    volumes:
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results
     command: ["npx", "playwright", "test", "--grep", "@release"]
 
   tutor:
-    <<: *playwright-common
-    command: ["npx", "playwright", "test", "--grep", "@tutor"]
-
-  dev:
-    <<: *playwright-common
+    image: order-client-autotests:local
+    build: .
+    working_dir: /app
+    env_file:
+      - .env
     environment:
       CI: ${CI}
       PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
-      AUTOTEST_ENV: dev
-    command: ["npx", "playwright", "test"]
+      AUTOTEST_ENV: ${AUTOTEST_ENV}
+    volumes:
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results
+    command: ["npx", "playwright", "test", "--grep", "@tutor"]
 
   dev-smoke:
-    <<: *playwright-common
+    image: order-client-autotests:local
+    build: .
+    working_dir: /app
+    env_file:
+      - .env
     environment:
       CI: ${CI}
       PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
       AUTOTEST_ENV: dev
+    volumes:
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results
     command: ["npx", "playwright", "test", "--grep", "@smoke"]
-
-  dev-tutor:
-    <<: *playwright-common
-    environment:
-      CI: ${CI}
-      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
-      AUTOTEST_ENV: dev
-    command: ["npx", "playwright", "test", "--grep", "@tutor"]
-
-  dev-tutor-walkthrough:
-    <<: *playwright-common
-    environment:
-      CI: ${CI}
-      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
-      AUTOTEST_ENV: dev
-    command: ["npx", "playwright", "test", "--grep", "tutor walkthrough"]
-
-  prod:
-    <<: *playwright-common
-    environment:
-      CI: ${CI}
-      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
-      AUTOTEST_ENV: prod
-    command: ["npx", "playwright", "test", "--grep", "@prod-safe"]
-
-  prod-release:
-    <<: *playwright-common
-    environment:
-      CI: ${CI}
-      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
-      AUTOTEST_ENV: prod
-    command: ["npx", "playwright", "test", "--grep", "@release"]
