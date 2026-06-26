@@ -7,9 +7,9 @@ x-playwright-common: &playwright-common
   env_file:
     - .env
   environment:
-    CI: ${CI:-0}
-    PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS:-1}
-    AUTOTEST_ENV: ${AUTOTEST_ENV:-dev}
+    CI: ${CI}
+    PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
+    AUTOTEST_ENV: ${AUTOTEST_ENV}
   volumes:
     - ./playwright-report:/app/playwright-report
     - ./test-results:/app/test-results
@@ -33,54 +33,48 @@ services:
 
   dev:
     <<: *playwright-common
-    profiles: ["dev"]
     environment:
-      CI: ${CI:-0}
-      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS:-1}
+      CI: ${CI}
+      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
       AUTOTEST_ENV: dev
     command: ["npx", "playwright", "test"]
 
   dev-smoke:
     <<: *playwright-common
-    profiles: ["dev"]
     environment:
-      CI: ${CI:-0}
-      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS:-1}
+      CI: ${CI}
+      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
       AUTOTEST_ENV: dev
     command: ["npx", "playwright", "test", "--grep", "@smoke"]
 
   dev-tutor:
     <<: *playwright-common
-    profiles: ["dev"]
     environment:
-      CI: ${CI:-0}
-      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS:-1}
+      CI: ${CI}
+      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
       AUTOTEST_ENV: dev
     command: ["npx", "playwright", "test", "--grep", "@tutor"]
 
   dev-tutor-walkthrough:
     <<: *playwright-common
-    profiles: ["dev"]
     environment:
-      CI: ${CI:-0}
-      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS:-1}
+      CI: ${CI}
+      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
       AUTOTEST_ENV: dev
     command: ["npx", "playwright", "test", "--grep", "tutor walkthrough"]
 
   prod:
     <<: *playwright-common
-    profiles: ["prod"]
     environment:
-      CI: ${CI:-0}
-      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS:-1}
+      CI: ${CI}
+      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
       AUTOTEST_ENV: prod
     command: ["npx", "playwright", "test", "--grep", "@prod-safe"]
 
   prod-release:
     <<: *playwright-common
-    profiles: ["prod"]
     environment:
-      CI: ${CI:-0}
-      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS:-1}
+      CI: ${CI}
+      PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS}
       AUTOTEST_ENV: prod
     command: ["npx", "playwright", "test", "--grep", "@release"]
