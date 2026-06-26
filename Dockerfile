@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY package.json tsconfig.json playwright.config.ts ./
 COPY .env.example ./
+COPY docker/env/autotest_env ./.env
 COPY src ./src
 COPY tests ./tests
 
