@@ -89,7 +89,8 @@ export const walkthroughCoords = {
     claimButton: { x: 1086, y: 642 }
   },
   levelUpGirl: {
-    closeButton: { x: 205, y: 69 }
+    closeButton: { x: 205, y: 69 },
+    continueMessage: { x: 893, y: 247 },
   },
   chat2: {
     continueMessage: { x: 883, y: 502 },
@@ -107,7 +108,7 @@ export const walkthroughCoords = {
     closeButton: { x: 207, y: 69 }
   },
   battleCampaign1: {
-    continueMessage: { x: 728, y: 429 },
+    continueMessage: { x: 1206, y: 377 },
     fightButton: { x: 795, y: 489 },
     winDialogClose: { x: 1075, y: 642 }
   },
