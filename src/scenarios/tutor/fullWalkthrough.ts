@@ -304,23 +304,38 @@ async function useReadyHeroAbility(
   readyAfterSequence: number,
   fallbackPoint: { x: number; y: number }
 ): Promise<{ useAbility: AutotestEvent; abilityUsed: AutotestEvent }> {
-  const sequence = await game.checkpoint();
+  const ready = await game.waitBattleAbilityReadyAfter(readyAfterSequence, stepId, 5000);
 
-  try {
-    const ready = await game.waitBattleAbilityReadyAfter(readyAfterSequence, stepId, 5000);
-    if (ready.activation.x > 0 && ready.activation.y > 0) {
-      await game.clickUnityScreenPoint(ready.activation.x, ready.activation.y);
-    } else {
-      await click(game, fallbackPoint);
-    }
-  } catch {
+  const useAbility = await clickPointUntilEventProgress(
+    game,
+    (() => {
+      const hasFiniteActivation =
+        Number.isFinite(ready.activation.x)
+        && Number.isFinite(ready.activation.y);
+
+      if (!hasFiniteActivation) {
+        return fallbackPoint;
+      }
+
+      return {
+        x: Math.max(0, Math.min(1279, ready.activation.x)),
+        y: Math.max(0, Math.min(719, ready.activation.y))
+      };
+    })(),
+    [
+      { source: "tutor", type: "event_emitted", name: "UseBattleAbility", stepId }
+    ],
+    2,
+    2500
+  ).catch(async () => {
+    const sequence = await game.checkpoint();
     await click(game, fallbackPoint);
-  }
+    return game.waitEventAfter(
+      { source: "tutor", type: "event_emitted", name: "UseBattleAbility", stepId },
+      sequence
+    );
+  });
 
-  const useAbility = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "UseBattleAbility", stepId },
-    sequence
-  );
   await game.waitBattleAbilityActivatedAfter(useAbility.sequence, stepId);
   const abilityUsed = await game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "BattleAbilityUsed", stepId },
@@ -1247,23 +1262,25 @@ async function runBattleTower4(game: GameSession): Promise<void> {
 }
 
 async function runSummonPremium(game: GameSession): Promise<void> {
-  const { firstReplica: summonReplica } = await beginTutorStep(game, "SummonPremium");
-  await game.waitTutorHighlightRequested("summon_btn", "SummonPremium", summonReplica.sequence);
+  const stepId = "Summon";
+
+  const { firstReplica: summonReplica } = await beginTutorStep(game, stepId);
+  await game.waitTutorHighlightRequested("summon_btn", stepId, summonReplica.sequence);
   await click(game, tutorCoords.summon_btn);
   const summonClicked = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "SummonClicked", stepId: "SummonPremium" },
+    { source: "tutor", type: "event_emitted", name: "SummonClicked", stepId },
     summonReplica.sequence
   );
 
   const summonOpenReplica = await game.waitEventAfter(
-    { source: "tutor", type: "replica_shown", stepId: "SummonPremium" },
+    { source: "tutor", type: "replica_shown", stepId },
     summonClicked.sequence
   );
-  await game.waitTutorHighlightRequested("summon_open_one_btn", "SummonPremium", summonOpenReplica.sequence);
+  await game.waitTutorHighlightRequested("summon_open_one_btn", stepId, summonOpenReplica.sequence);
   const summonBuy = await game.checkpoint();
   await click(game, tutorCoords.summon_open_one_btn);
   await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "SummonBuy", stepId: "SummonPremium" },
+    { source: "tutor", type: "event_emitted", name: "SummonBuy", stepId },
     summonBuy
   );
 
@@ -1272,17 +1289,30 @@ async function runSummonPremium(game: GameSession): Promise<void> {
     walkthroughCoords.summonPremium.firstNewGirlClose,
     { waitForOpenAfterSequence: summonBuy }
   );
-  await closeGirlNewInfoDialog(
-    game,
-    walkthroughCoords.summonPremium.secondNewGirlClose,
-    { waitForOpenAfterSequence: firstGirlClosed.sequence }
-  );
 
-  const closeReplica = await game.waitTutorReplicaShown("SummonPremium", summonBuy);
-  await game.waitTutorHighlightRequested("close_btn", "SummonPremium", closeReplica.sequence);
+  try {
+    const nextSummonEvent = await game.waitAnyEventAfter([
+      { source: "ui", type: "dialog_opened", dialog: "GirlNewInfoDialog" },
+      { source: "tutor", type: "replica_shown", stepId },
+      { source: "tutor", type: "highlight_requested", name: "close_btn", stepId }
+    ], firstGirlClosed.sequence, 3000);
+
+    if (nextSummonEvent.source === "ui" && nextSummonEvent.dialog === "GirlNewInfoDialog") {
+      await closeGirlNewInfoDialog(
+        game,
+        walkthroughCoords.summonPremium.secondNewGirlClose,
+        { waitForOpenAfterSequence: firstGirlClosed.sequence }
+      );
+    }
+  } catch {
+    // Current client may open only one girl dialog here.
+  }
+
+  const closeReplica = await game.waitTutorReplicaShown(stepId, summonBuy);
+  await game.waitTutorHighlightRequested("close_btn", stepId, closeReplica.sequence);
   await click(game, walkthroughCoords.summonPremium.closeButton);
-  await game.waitTutorEvent("DialogClosed", "SummonPremium", closeReplica.sequence);
-  await game.waitTutorStepCompleted("SummonPremium");
+  await game.waitTutorEvent("DialogClosed", stepId, closeReplica.sequence);
+  await game.waitTutorStepCompleted(stepId);
 }
 
 async function runBattleCampaign1(game: GameSession): Promise<void> {
@@ -1384,6 +1414,7 @@ async function runBattleCampaign1(game: GameSession): Promise<void> {
 
   while (battleEnemyDefeated === null) {
     const nextEvent = await game.waitAnyEventAfter([
+      { source: "battle", type: "ability_ready", name: "HeroAbilityReady", stepId: "BattleCampaign1" },
       { source: "battle", type: "move_advice", stepId: "BattleCampaign1" },
       { source: "tutor", type: "event_emitted", name: "BattleEnemyDefeated", stepId: "BattleCampaign1" }
     ], turnBoundary);
@@ -1396,6 +1427,22 @@ async function runBattleCampaign1(game: GameSession): Promise<void> {
     if (isBattleEnemyDefeated) {
       battleEnemyDefeated = nextEvent.sequence;
       break;
+    }
+
+    const isAbilityReady =
+      nextEvent.source === "battle"
+      && nextEvent.type === "ability_ready"
+      && nextEvent.name === "HeroAbilityReady";
+
+    if (isAbilityReady) {
+      const { abilityUsed } = await useReadyHeroAbility(
+        game,
+        "BattleCampaign1",
+        turnBoundary,
+        tutorCoords.interact_firstBattlerWithAbility
+      );
+      turnBoundary = abilityUsed.sequence;
+      continue;
     }
 
     const moveAdvice = await game.waitBattleMoveAdviceAfter(turnBoundary);
