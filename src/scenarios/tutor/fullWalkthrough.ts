@@ -1,5 +1,6 @@
 import type { GameSession } from "../../fixtures/game.fixture";
 import type { AutotestEvent, BattleMoveAdvice, EventFilter } from "../../types/autotest";
+import { matchesFilter } from "../../helpers/autotest";
 import { introCoords, tutorCoords, tutorTimings, walkthroughCoords } from "./coords";
 import { bootstrapTutorWalkthrough } from "./walkthrough";
 
@@ -147,7 +148,7 @@ function getReadyBattleAbility(event: AutotestEvent): ReadyBattleAbility | null 
     return null;
   }
 
-  const normalizedPoint = normalizeBattleAbilityUnityPoint(event.stepId, x, y);
+  const normalizedPoint = normalizeBattleAbilityUnityPoint(event.stepId ?? undefined, x, y);
 
   return {
     key: `${cardConfigId}:${abilityId}`,
@@ -523,7 +524,7 @@ async function openChatPhoto(
   maxAttempts = 3,
   retryDelayMs = 300
 ): Promise<AutotestEvent> {
-  const photoOpenedOrLaterFilters: AutotestEventFilter[] = [
+  const photoOpenedOrLaterFilters: EventFilter[] = [
     { source: "tutor", type: "event_emitted", name: "PhotoOpened", stepId },
     { source: "tutor", type: "event_emitted", name: "PhotoClosed", stepId },
     { source: "tutor", type: "highlight_requested", name: "chat_close_btn", stepId }

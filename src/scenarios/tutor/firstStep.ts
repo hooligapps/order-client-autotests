@@ -23,8 +23,17 @@ export async function runTutorFirstStep(
     await game.waitTutorHighlightRequested(scenario.highlightName);
   }
 
+  const afterClickSequence = await game.checkpoint();
   await game.clickAt(scenario.clickX, scenario.clickY);
-  await game.waitTutorEvent(scenario.expectedTutorEvent);
-  await game.waitTutorStepSaved(scenario.stepId);
-  await game.waitTutorStepCompleted(scenario.stepId);
+  await game.waitTutorEvent(scenario.expectedTutorEvent, scenario.stepId, afterClickSequence);
+  await game.waitEventAfter({
+    source: "tutor",
+    type: "step_saved",
+    stepId: scenario.stepId
+  }, afterClickSequence);
+  await game.waitEventAfter({
+    source: "tutor",
+    type: "step_completed",
+    stepId: scenario.stepId
+  }, afterClickSequence);
 }

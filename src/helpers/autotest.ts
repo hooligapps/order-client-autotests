@@ -3,8 +3,12 @@ import { env } from "../config/env";
 import type { AutotestEvent, AutotestStore, EventFilter } from "../types/autotest";
 import { timeoutMessage } from "./waits";
 
-function matchesFilter(event: AutotestEvent, filter: EventFilter): boolean {
-  return Object.entries(filter).every(([key, expectedValue]) => {
+function getFilterEntries(filter: EventFilter): Array<[keyof EventFilter, EventFilter[keyof EventFilter]]> {
+  return Object.entries(filter) as Array<[keyof EventFilter, EventFilter[keyof EventFilter]]>;
+}
+
+export function matchesFilter(event: AutotestEvent, filter: EventFilter): boolean {
+  return getFilterEntries(filter).every(([key, expectedValue]) => {
     return event[key as keyof EventFilter] === expectedValue;
   });
 }
@@ -58,8 +62,9 @@ export async function waitForEvent(
   await page.waitForFunction(
     ({ currentFilter }) => {
       const events = window.__autotest?.events ?? [];
+      const filterEntries = Object.entries(currentFilter) as Array<[keyof EventFilter, EventFilter[keyof EventFilter]]>;
       return events.some((event) => {
-        return Object.entries(currentFilter).every(([key, expectedValue]) => {
+        return filterEntries.every(([key, expectedValue]) => {
           return event[key] === expectedValue;
         });
       });
@@ -103,12 +108,13 @@ export async function waitForEventAfter(
   await page.waitForFunction(
     ({ currentFilter, minSequence }) => {
       const events = window.__autotest?.events ?? [];
+      const filterEntries = Object.entries(currentFilter) as Array<[keyof EventFilter, EventFilter[keyof EventFilter]]>;
       return events.some((event) => {
         if ((event.sequence ?? 0) <= minSequence) {
           return false;
         }
 
-        return Object.entries(currentFilter).every(([key, expectedValue]) => {
+        return filterEntries.every(([key, expectedValue]) => {
           return event[key] === expectedValue;
         });
       });

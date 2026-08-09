@@ -113,7 +113,13 @@ export class GameSession {
     return `[t+${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}]`;
   }
 
-  private getPrimaryEventLabel(input: Pick<AutotestEvent, "source" | "type" | "name" | "dialog" | "screen">): string | undefined {
+  private getPrimaryEventLabel(input: {
+    source?: string;
+    type?: string;
+    name?: string | null;
+    dialog?: string | null;
+    screen?: string | null;
+  }): string | undefined {
     if (input.dialog) {
       return input.dialog;
     }
@@ -407,16 +413,6 @@ export class GameSession {
     const sequence = afterSequence ?? await this.checkpoint();
     this.eventSegmentStartSequence = sequence;
     this.logKeyPoint(`segment start after=${String(sequence)}${label ? ` label=${label}` : ""}`);
-
-    await this.page.evaluate((minSequence) => {
-      const store = window.__autotest;
-      if (!store?.events) {
-        return;
-      }
-
-      store.events = store.events.filter((event) => (event.sequence ?? 0) > minSequence);
-    }, sequence);
-
     return sequence;
   }
 

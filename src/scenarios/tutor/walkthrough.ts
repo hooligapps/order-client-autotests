@@ -33,18 +33,27 @@ async function runTutorWalkthroughAction(
     await game.waitTutorHighlightRequested(step.highlightName);
   }
 
+  const afterClickSequence = await game.checkpoint();
   await game.clickAt(step.clickX, step.clickY);
 
   if (step.expectedTutorEvent) {
-    await game.waitTutorEvent(step.expectedTutorEvent);
+    await game.waitTutorEvent(step.expectedTutorEvent, step.stepId, afterClickSequence);
   }
 
   if (step.waitStepSaved !== false) {
-    await game.waitTutorStepSaved(step.stepId);
+    await game.waitEventAfter({
+      source: "tutor",
+      type: "step_saved",
+      stepId: step.stepId
+    }, afterClickSequence);
   }
 
   if (step.waitStepCompleted !== false) {
-    await game.waitTutorStepCompleted(step.stepId);
+    await game.waitEventAfter({
+      source: "tutor",
+      type: "step_completed",
+      stepId: step.stepId
+    }, afterClickSequence);
   }
 }
 
