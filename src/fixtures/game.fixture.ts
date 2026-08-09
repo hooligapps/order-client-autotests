@@ -113,58 +113,62 @@ export class GameSession {
     return `[t+${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}]`;
   }
 
-  private async logClickDiagnostics(stage: "before" | "after", x: number, y: number): Promise<void> {
-    const snapshot = await this.page.evaluate(({ x, y }) => {
-      const element = document.elementFromPoint(x, y) as HTMLElement | null;
-      const canvas = document.querySelector("canvas") as HTMLCanvasElement | null;
-      const canvasRect = canvas?.getBoundingClientRect();
+  private getPrimaryEventLabel(input: Pick<AutotestEvent, "source" | "type" | "name" | "dialog" | "screen">): string | undefined {
+    if (input.dialog) {
+      return input.dialog;
+    }
 
-      return {
-        point: { x, y },
-        element: element
-          ? {
-              tag: element.tagName,
-              id: element.id || null,
-              className: typeof element.className === "string" ? element.className : null,
-              text: element.textContent?.trim()?.slice(0, 80) || null,
-              pointerEvents: getComputedStyle(element).pointerEvents
-            }
-          : null,
-        canvas: canvasRect
-          ? {
-              left: Math.round(canvasRect.left),
-              top: Math.round(canvasRect.top),
-              right: Math.round(canvasRect.right),
-              bottom: Math.round(canvasRect.bottom),
-              width: Math.round(canvasRect.width),
-              height: Math.round(canvasRect.height),
-              containsPoint: x >= canvasRect.left && x <= canvasRect.right && y >= canvasRect.top && y <= canvasRect.bottom
-            }
-          : null
-      };
-    }, { x, y });
+    if (input.screen) {
+      return input.screen;
+    }
 
-    this.logKeyPoint(`click_diagnostics stage=${stage} ${JSON.stringify(snapshot)}`);
+    if (input.source === "tutor" && (input.type === "replica_shown" || input.type === "replica_hidden")) {
+      return undefined;
+    }
+
+    return input.name ?? undefined;
   }
 
-
   private describeFilter(filter: EventFilter): string {
-    return Object.entries(filter)
-      .map(([key, value]) => `${key}=${String(value)}`)
-      .join(" ");
+    const parts = [filter.source, filter.type];
+    const primaryLabel = this.getPrimaryEventLabel({
+      source: filter.source,
+      type: filter.type,
+      name: filter.name,
+      dialog: filter.dialog,
+      screen: filter.screen
+    });
+
+    if (primaryLabel) {
+      parts.push(primaryLabel);
+    }
+
+    if (filter.stepId) {
+      parts.push(filter.stepId);
+    }
+
+    return parts.filter(Boolean).join(":");
   }
 
   private describeEvent(event: AutotestEvent): string {
-    const details = this.describeFilter({
-      source: event.source,
-      type: event.type,
-      ...(event.name ? { name: event.name } : {}),
-      ...(event.stepId ? { stepId: event.stepId } : {}),
-      ...(event.screen ? { screen: event.screen } : {}),
-      ...(event.dialog ? { dialog: event.dialog } : {})
-    });
+    const parts = [event.source, event.type];
+    const primaryLabel = this.getPrimaryEventLabel(event);
 
-    return `${details} seq=${String(event.sequence)}`;
+    if (primaryLabel) {
+      parts.push(primaryLabel);
+    }
+
+    if (event.stepId) {
+      parts.push(event.stepId);
+    }
+
+    return `${parts.join(":")}#${String(event.sequence)}`;
+  }
+
+  private formatWaitDescriptor(filter: EventFilter | EventFilter[], afterSequence: number, timeoutMs: number): string {
+    const filters = Array.isArray(filter) ? filter : [filter];
+    const filterDescription = filters.map((item) => this.describeFilter(item)).join(" | ");
+    return `wait#${String(afterSequence)}/${String(timeoutMs)} ${filterDescription}`;
   }
 
   private effectiveAfterSequence(afterSequence = 0): number {
@@ -179,11 +183,8 @@ export class GameSession {
 
   private async waitForFilter(filter: EventFilter, timeoutMs = env.eventTimeoutMs): Promise<AutotestEvent> {
     const effectiveAfter = this.effectiveAfterSequence();
-    this.logKeyPoint(
-      `wait ${this.describeFilter(filter)}`
-      + (effectiveAfter > 0 ? ` after=${String(effectiveAfter)}` : "")
-      + ` timeout=${String(timeoutMs)}ms`
-    );
+    const waitDescriptor = this.formatWaitDescriptor(filter, effectiveAfter, timeoutMs);
+    this.logKeyPoint(waitDescriptor);
 
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
@@ -191,12 +192,14 @@ export class GameSession {
 
       const event = this.findMatchingEvent(await this.getEvents(), filter, effectiveAfter);
       if (event) {
-        this.logKeyPoint(`got ${this.describeEvent(event)}`);
+        this.logKeyPoint(`✓ ${this.describeEvent(event)}`);
         return event;
       }
 
       await this.page.waitForTimeout(env.pollIntervalMs);
     }
+
+    this.logKeyPoint(`✗ ${waitDescriptor}`);
 
     throw new Error(
       `Timed out after ${String(timeoutMs)}ms waiting for ${this.describeFilter(filter)}`
@@ -206,7 +209,8 @@ export class GameSession {
 
   private async waitForFilterAfter(filter: EventFilter, afterSequence: number, timeoutMs = env.eventTimeoutMs): Promise<AutotestEvent> {
     const effectiveAfter = this.effectiveAfterSequence(afterSequence);
-    this.logKeyPoint(`wait ${this.describeFilter(filter)} after=${String(effectiveAfter)} timeout=${String(timeoutMs)}ms`);
+    const waitDescriptor = this.formatWaitDescriptor(filter, effectiveAfter, timeoutMs);
+    this.logKeyPoint(waitDescriptor);
 
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
@@ -214,12 +218,14 @@ export class GameSession {
 
       const event = this.findMatchingEvent(await this.getEvents(), filter, effectiveAfter);
       if (event) {
-        this.logKeyPoint(`got ${this.describeEvent(event)}`);
+        this.logKeyPoint(`✓ ${this.describeEvent(event)}`);
         return event;
       }
 
       await this.page.waitForTimeout(env.pollIntervalMs);
     }
+
+    this.logKeyPoint(`✗ ${waitDescriptor}`);
 
     throw new Error(
       `Timed out after ${String(timeoutMs)}ms waiting for ${this.describeFilter(filter)} after=${String(effectiveAfter)}`
@@ -424,7 +430,8 @@ export class GameSession {
 
   async waitAnyEventAfter(filters: EventFilter[], afterSequence: number, timeoutMs = env.eventTimeoutMs): Promise<AutotestEvent> {
     const effectiveAfter = this.effectiveAfterSequence(afterSequence);
-    this.logKeyPoint(`wait any after=${String(effectiveAfter)} timeout=${String(timeoutMs)}ms :: ${filters.map((filter) => this.describeFilter(filter)).join(" || ")}`);
+    const waitDescriptor = this.formatWaitDescriptor(filters, effectiveAfter, timeoutMs);
+    this.logKeyPoint(waitDescriptor);
     const deadline = Date.now() + timeoutMs;
 
     while (Date.now() < deadline) {
@@ -435,12 +442,14 @@ export class GameSession {
         .sort((a, b) => a.sequence - b.sequence)[0];
 
       if (matched) {
-        this.logKeyPoint(`got ${this.describeEvent(matched)}`);
+        this.logKeyPoint(`✓ ${this.describeEvent(matched)}`);
         return matched;
       }
 
       await this.waitMs(env.pollIntervalMs);
     }
+
+    this.logKeyPoint(`✗ ${waitDescriptor}`);
 
     throw new Error(`Timed out after ${String(timeoutMs)}ms waiting for any of ${JSON.stringify(filters)} after sequence ${String(afterSequence)}`);
   }
@@ -774,9 +783,7 @@ export class GameSession {
   async clickAt(x: number, y: number, label?: string): Promise<void> {
     this.logKeyPoint(`click label=${this.getClickLabel(label)} x=${x.toFixed(0)} y=${y.toFixed(0)}`);
     await this.page.waitForTimeout(GameSession.actionDelayMs);
-    await this.logClickDiagnostics("before", x, y);
     await clickAt(this.page, x, y);
-    await this.logClickDiagnostics("after", x, y);
   }
 
   async waitMs(timeoutMs: number): Promise<void> {

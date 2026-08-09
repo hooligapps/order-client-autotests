@@ -202,11 +202,6 @@ async function tryUseBattleAbilityPoint(
   abilityKey?: string,
   pointSpace: "page" | "unity" = "page"
 ): Promise<AutotestEvent | null> {
-  game.logDebug(
-    `ability_click source=${sourceLabel} stepId=${stepId} x=${String(point.x)} y=${String(point.y)}`
-    + (abilityKey ? ` abilityKey=${abilityKey}` : "")
-  );
-
   try {
     for (let attempt = 0; attempt < 2; attempt += 1) {
       const sequence = await game.checkpoint();
@@ -528,6 +523,12 @@ async function openChatPhoto(
   maxAttempts = 3,
   retryDelayMs = 300
 ): Promise<AutotestEvent> {
+  const photoOpenedOrLaterFilters: AutotestEventFilter[] = [
+    { source: "tutor", type: "event_emitted", name: "PhotoOpened", stepId },
+    { source: "tutor", type: "event_emitted", name: "PhotoClosed", stepId },
+    { source: "tutor", type: "highlight_requested", name: "chat_close_btn", stepId }
+  ];
+
   for (let i = 0; i < maxAttempts; i += 1) {
     const sequence = await game.checkpoint();
     await click(game, point);
@@ -539,12 +540,14 @@ async function openChatPhoto(
         { source: "tutor", type: "event_emitted", name: "PhotoOpened", stepId }
       ], sequence, 2000);
 
-      if (photoProgress.name === "PhotoOpened") {
+      if (photoProgress.name === "PhotoOpened"
+        || photoProgress.name === "PhotoClosed"
+        || photoProgress.name === "chat_close_btn") {
         return photoProgress;
       }
 
-      return await game.waitEventAfter(
-        { source: "tutor", type: "event_emitted", name: "PhotoOpened", stepId },
+      return await game.waitAnyEventAfter(
+        photoOpenedOrLaterFilters,
         photoProgress.sequence,
         5000
       );
@@ -554,8 +557,8 @@ async function openChatPhoto(
   }
 
   const sequence = await game.checkpoint();
-  return game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "PhotoOpened", stepId },
+  return game.waitAnyEventAfter(
+    photoOpenedOrLaterFilters,
     sequence,
     5000
   );
@@ -596,13 +599,16 @@ async function advanceChatAtUntilCompleted(
   options?: {
     waitForAnswerReady?: boolean,
   }
-): Promise<void> {
+): Promise<AutotestEvent> {
   const points = Array.isArray(point) ? point : [point];
   let boundary = afterSequence;
 
   for (let i = 0; i < 12; i += 1) {
     if (await game.hasEventAfter({ source: "tutor", type: "event_emitted", name: "ChatStoryCompleted", ...(stepId ? { stepId } : {}) }, boundary)) {
-      return;
+      return game.waitEventAfter(
+        { source: "tutor", type: "event_emitted", name: "ChatStoryCompleted", ...(stepId ? { stepId } : {}) },
+        boundary
+      );
     }
 
     if (options?.waitForAnswerReady) {
@@ -613,7 +619,7 @@ async function advanceChatAtUntilCompleted(
       ], boundary, 10000);
 
       if (readyOrCompleted.source === "tutor") {
-        return;
+        return readyOrCompleted;
       }
     }
 
@@ -632,11 +638,11 @@ async function advanceChatAtUntilCompleted(
 
     boundary = nextEvent.sequence;
     if (nextEvent.source === "tutor") {
-      return;
+      return nextEvent;
     }
   }
 
-  await game.waitEventAfter(
+  return game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "ChatStoryCompleted", ...(stepId ? { stepId } : {}) },
     boundary
   );
@@ -703,7 +709,6 @@ async function levelUpUntilComplete(
   terminalFilters: EventFilter[] = [
     { source: "tutor", type: "event_emitted", name: "GirlLevelUpComplete", stepId },
     { source: "tutor", type: "step_completed", stepId },
-    { source: "tutor", type: "step_started" },
     { source: "ui", type: "dialog_closed", dialog: "GirlInfoDialog" }
   ]
 ): Promise<number> {
@@ -1110,11 +1115,11 @@ async function runChat1(game: GameSession): Promise<void> {
   );
 
   const beforeChatAnswers = await game.checkpoint();
-  await advanceChatAtUntilCompleted(game, [walkthroughCoords.chat1.answer, walkthroughCoords.chat3.answer], beforeChatAnswers, "Chat1");
-
-  const storyCompleted = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "ChatStoryCompleted" },
-    beforeChatAnswers
+  const storyCompleted = await advanceChatAtUntilCompleted(
+    game,
+    [walkthroughCoords.chat1.answer, walkthroughCoords.chat3.answer],
+    beforeChatAnswers,
+    "Chat1"
   );
   await game.waitEventAfter(
     { source: "tutor", type: "step_saved", stepId: "Chat1" },
@@ -1817,17 +1822,12 @@ async function runChat3(game: GameSession): Promise<void> {
   );
 
   const beforeChatAnswers = chatDialogOpened.sequence;
-  await advanceChatAtUntilCompleted(
+  const storyCompleted = await advanceChatAtUntilCompleted(
     game,
     [walkthroughCoords.chat3.answer, walkthroughCoords.chat1.answer],
     beforeChatAnswers,
     "Chat3",
     { waitForAnswerReady: true }
-  );
-
-  const storyCompleted = await game.waitEventAfter(
-    { source: "tutor", type: "event_emitted", name: "ChatStoryCompleted", stepId: "Chat3" },
-    beforeChatAnswers
   );
   await game.waitEventAfter(
     { source: "tutor", type: "step_saved", stepId: "Chat3" },

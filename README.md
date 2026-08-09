@@ -144,6 +144,19 @@ npm run test:prod
 npm run report
 ```
 
+Useful local commands:
+
+```bash
+PLAYWRIGHT_HEADLESS=0 npx playwright test --ui
+PLAYWRIGHT_HEADLESS=0 npx playwright test --grep "tutor walkthrough"
+PLAYWRIGHT_HEADLESS=0 npx playwright show-report
+```
+
+Notes:
+
+- `--ui` is the most convenient local mode when you want to pick a spec manually and watch the browser.
+- Docker services are intended for batch runs. Playwright UI is expected to be run locally from the repository.
+
 Examples:
 
 ```bash
@@ -174,18 +187,127 @@ order-client-autotests/
 
 Tests use the `GameSession` facade rather than raw Playwright calls in spec files. Scenario logic lives in `src/scenarios`, and specs only compose tagged suites.
 
-Current first-version coverage:
+Current coverage:
 
-- Runtime smoke
-- Dev release smoke
-- Prod safe release smoke
-- Tutor first-step smoke
+- `tests/runtime.smoke.spec.ts`
+  - basic runtime bootstrap
+  - page opens, `window.__autotest` is available, and `app.ready` is reached
+- `tests/dev.release.smoke.spec.ts`
+  - release-oriented smoke checks against `dev`
+- `tests/prod.release.smoke.spec.ts`
+  - safe release checks against `prod`
+- `tests/tutor.first-step.spec.ts`
+  - configurable one-step tutor smoke driven by `TUTOR_*` env variables
+- `tests/tutor.walkthrough.spec.ts`
+  - full coordinate-based walkthrough of the main tutorial flow in `dev`
 
 Current tutor scenarios are coordinate-based: Playwright performs real mouse clicks, while the client validates progress through structured autotest events.
 
 Tutor smoke is configured through `TUTOR_*` environment variables, so coordinates and expected tutor events can be changed without editing the test code. The default scenario expects `BattleTower1` and a click that emits `ClickContinueInMessage`.
 
-For a full tutorial run, use `tests/tutor.walkthrough.spec.ts`. The scenario is now defined in code in `src/scenarios/tutor/fullWalkthrough.ts`, because one `TutorStepId` may contain several user actions and it is easier to debug this flow in TypeScript than in a long JSON file. The draft walkthrough is assembled from `Assets/ScriptableObjects/tutor_config.asset`; `clickX` and `clickY` are still placeholders and must be filled with real coordinates from the target build.
+For a full tutorial run, use `tests/tutor.walkthrough.spec.ts`. The scenario is defined in code in `src/scenarios/tutor/fullWalkthrough.ts`, because one `TutorStepId` may contain several user actions and it is easier to debug this flow in TypeScript than in a long JSON file.
+
+### Tutor tests
+
+There are two different tutor workflows and they solve different problems:
+
+- `tutor.first-step.spec.ts`
+  - quick smoke for a single tutor interaction
+  - driven by `TUTOR_STEP_ID`, `TUTOR_CLICK_X`, `TUTOR_CLICK_Y`, `TUTOR_EXPECTED_EVENT`, and optional `TUTOR_HIGHLIGHT_NAME`
+  - useful when client-side tutor markup changed and you want to validate one target quickly
+- `tutor.walkthrough.spec.ts`
+  - end-to-end walkthrough of the full tutorial chain
+  - hardcoded coordinates live in `src/scenarios/tutor/coords.ts`
+  - step orchestration and event waits live in `src/scenarios/tutor/fullWalkthrough.ts`
+  - intended for `AUTOTEST_ENV=dev`
+
+The walkthrough is event-driven first and coordinate-driven second:
+
+- clicks are done by Playwright against fixed page coordinates
+- progress is validated through autotest events from `app`, `ui`, `tutor`, `battle`, and `chat`
+- helper methods in `GameSession` always wait for a concrete event boundary before proceeding to the next action
+
+### How to update tutor walkthrough coordinates
+
+When the client layout changes:
+
+1. Run the walkthrough locally in headful mode.
+2. Add a temporary browser click logger if needed.
+3. Reproduce the broken step manually in the same build.
+4. Compare manual click coordinates with the scenario coordinates in `src/scenarios/tutor/coords.ts`.
+5. Update only the affected coordinate block.
+6. Re-run the specific walkthrough, not the whole suite first.
+
+Recommended commands:
+
+```bash
+PLAYWRIGHT_HEADLESS=0 npx playwright test --grep "tutor walkthrough"
+PLAYWRIGHT_HEADLESS=0 npx playwright test --ui
+```
+
+### How tutor logs work
+
+`GameSession` prints compact progress logs into the test runner output. The common shapes are:
+
+- `wait#912/5000 tutor:event_emitted:GirlLevelUp:LevelUpGirl2 | tutor:step_completed:LevelUpGirl2`
+  - after event sequence `912`, wait up to `5000ms` for one of these filters
+- `✓ tutor:event_emitted:GirlLevelUp:LevelUpGirl2#913`
+  - the wait completed with sequence `913`
+- `click label=fullWalkthrough.ts:727:11 x=1214 y=632`
+  - Playwright clicked the page at these coordinates
+- `segment start after=930 label=step:LastMessage`
+  - the walkthrough switched to a new logical segment
+
+Rules of thumb when reading tutor logs:
+
+- `source:type:name:stepId#sequence` is the important part
+- `wait#<after>/<timeout>` means "search only after this event sequence"
+- seeing the same final event twice usually means two different waits observed the same event, not that the client emitted it twice
+- `highlight_requested` is usually a stronger UI targeting signal than `replica_shown`
+- `step_completed` is a tutor boundary, while `step_started:<NextStep>` is already the next segment
+
+### Reports and artifacts
+
+Every run writes:
+
+- `playwright-report/`
+  - HTML report
+- `test-results/`
+  - JSON and JUnit outputs
+- `test-results/artifacts/`
+  - screenshots, traces, and videos according to Playwright config
+
+Current Playwright artifact policy:
+
+- screenshots: `only-on-failure`
+- trace: `on-first-retry`
+- video: `retain-on-failure`
+
+The JSON report is also useful for debugging because it contains base64-encoded attachments such as:
+
+- `console-messages.txt`
+- `page-errors.txt`
+- `failed-requests.txt`
+- `autotest-events.json`
+- `autotest-last-event.json`
+
+This is important for tutor debugging: even if the HTML report view is noisy, `autotest-last-event.json` often shows the true last structured state that the game reached.
+
+### Typical debugging workflow
+
+For a tutor failure:
+
+1. Open the runner output and find the last `wait#...` line.
+2. Check which exact filter timed out.
+3. Open the HTML report and inspect video or screenshot.
+4. Read `autotest-last-event.json` from `test-results/results.json` or report attachments.
+5. Decide whether the issue is:
+   - wrong coordinate
+   - missing client event
+   - overly broad or stale event filter
+   - transition already moved to a later state than the test expected
+
+Prefer fixing the event logic first. Add new delays only when the client genuinely has an animation or readiness gap with no reliable event to wait for.
 
 ## CI
 
