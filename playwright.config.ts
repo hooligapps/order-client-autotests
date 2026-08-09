@@ -28,7 +28,7 @@ export default defineConfig({
     headless: env.headless,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
-    video: "on",
+    video: "retain-on-failure",
     navigationTimeout: env.navigationTimeoutMs,
     actionTimeout: env.defaultTimeoutMs,
     viewport: {
