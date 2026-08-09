@@ -45,40 +45,36 @@ docker compose --profile dev run --rm dev-tutor-walkthrough
 Available services:
 
 - `playwright` runs the full suite.
-- `smoke` runs `@smoke`.
-- `release` runs `@release`.
+- `bootstrap` runs `@bootstrap`.
 - `tutor` runs `@tutor`.
+- `tutor-full` runs `@full`.
 - `dev` runs the full suite with `AUTOTEST_ENV=dev`.
-- `dev-smoke` runs smoke in `dev`.
 - `dev-tutor` runs tutor in `dev`.
 - `dev-tutor-walkthrough` runs the full tutor walkthrough in `dev`.
 - `prod` runs `@prod-safe` in `prod`.
-- `prod-release` runs `@release` in `prod`.
 
 Equivalent npm shortcuts:
 
 ```bash
 npm run docker:build
 npm run docker:test
-npm run docker:test:smoke
-npm run docker:test:release
+npm run docker:test:bootstrap
 npm run docker:test:tutor
+npm run docker:test:tutor:full
 npm run docker:test:dev
-npm run docker:test:dev:smoke
 npm run docker:test:dev:tutor
 npm run docker:test:dev:tutor:walkthrough
 npm run docker:test:prod
-npm run docker:test:prod:release
 ```
 
 `Makefile` shortcuts are also available:
 
 ```bash
 make build
-make dev-smoke
+make bootstrap
+make tutor-full
 make dev-tutor
 make prod
-make prod-release
 ```
 
 Reports are written to local directories:
@@ -136,9 +132,9 @@ Polling controls:
 
 ```bash
 npm test
-npm run test:smoke
-npm run test:release
+npm run test:bootstrap
 npm run test:tutor
+npm run test:tutor:full
 npm run test:dev
 npm run test:prod
 npm run report
@@ -160,8 +156,7 @@ Notes:
 Examples:
 
 ```bash
-AUTOTEST_ENV=dev DEV_BASE_URL=https://dev-cdn.example.com/build_123/ npm run test:smoke
-AUTOTEST_ENV=prod PROD_BASE_URL=https://prod-cdn.example.com/la_7_1/ npm run test:release -- --grep @prod-safe
+AUTOTEST_ENV=dev DEV_BASE_URL=https://dev-cdn.example.com/build_123/ npm run test:bootstrap
 BUILD_URL=https://cdn.example.com/build_555/ AUTOTEST_QUERY=customToken=abc npm test
 ```
 
@@ -189,21 +184,17 @@ Tests use the `GameSession` facade rather than raw Playwright calls in spec file
 
 Current coverage:
 
-- `tests/runtime.smoke.spec.ts`
+- `tests/runtime.bootstrap.spec.ts`
   - basic runtime bootstrap
   - page opens, `window.__autotest` is available, and `app.ready` is reached
-- `tests/dev.release.smoke.spec.ts`
-  - release-oriented smoke checks against `dev`
-- `tests/prod.release.smoke.spec.ts`
-  - safe release checks against `prod`
 - `tests/tutor.first-step.spec.ts`
-  - configurable one-step tutor smoke driven by `TUTOR_*` env variables
+  - configurable first tutorial segment check driven by `TUTOR_*` env variables
 - `tests/tutor.walkthrough.spec.ts`
-  - full coordinate-based walkthrough of the main tutorial flow in `dev`
+  - full coordinate-based walkthrough of the main tutorial flow
 
 Current tutor scenarios are coordinate-based: Playwright performs real mouse clicks, while the client validates progress through structured autotest events.
 
-Tutor smoke is configured through `TUTOR_*` environment variables, so coordinates and expected tutor events can be changed without editing the test code. The default scenario expects `BattleTower1` and a click that emits `ClickContinueInMessage`.
+Tutor first-step coverage is configured through `TUTOR_*` environment variables, so coordinates and expected tutor events can be changed without editing the test code. The default scenario expects `BattleTower1` and now plays through the whole first battle segment.
 
 For a full tutorial run, use `tests/tutor.walkthrough.spec.ts`. The scenario is defined in code in `src/scenarios/tutor/fullWalkthrough.ts`, because one `TutorStepId` may contain several user actions and it is easier to debug this flow in TypeScript than in a long JSON file.
 
@@ -212,14 +203,14 @@ For a full tutorial run, use `tests/tutor.walkthrough.spec.ts`. The scenario is 
 There are two different tutor workflows and they solve different problems:
 
 - `tutor.first-step.spec.ts`
-  - quick smoke for a single tutor interaction
+  - quick check for the first tutorial segment
   - driven by `TUTOR_STEP_ID`, `TUTOR_CLICK_X`, `TUTOR_CLICK_Y`, `TUTOR_EXPECTED_EVENT`, and optional `TUTOR_HIGHLIGHT_NAME`
-  - useful when client-side tutor markup changed and you want to validate one target quickly
+  - by default, `BattleTower1` follows the same battle flow as the full walkthrough until the first battle is completed
+  - for other steps, it still works as a short configurable event-driven check
 - `tutor.walkthrough.spec.ts`
   - end-to-end walkthrough of the full tutorial chain
   - hardcoded coordinates live in `src/scenarios/tutor/coords.ts`
   - step orchestration and event waits live in `src/scenarios/tutor/fullWalkthrough.ts`
-  - intended for `AUTOTEST_ENV=dev`
 
 The walkthrough is event-driven first and coordinate-driven second:
 

@@ -25,8 +25,8 @@ function readNumber(name: string, fallback: number): number {
 
 export const tutorConfig = {
   stepId: readString("TUTOR_STEP_ID", "BattleTower1"),
-  clickX: readNumber("TUTOR_CLICK_X", 812),
-  clickY: readNumber("TUTOR_CLICK_Y", 642),
-  expectedTutorEvent: readString("TUTOR_EXPECTED_EVENT", "ClickContinueInMessage"),
-  highlightName: readOptionalString("TUTOR_HIGHLIGHT_NAME")
+  clickX: readNumber("TUTOR_CLICK_X", 902),
+  clickY: readNumber("TUTOR_CLICK_Y", 707),
+  expectedTutorEvent: readString("TUTOR_EXPECTED_EVENT", "TowerClick"),
+  highlightName: readString("TUTOR_HIGHLIGHT_NAME", "dashboard_battle_btn")
 };

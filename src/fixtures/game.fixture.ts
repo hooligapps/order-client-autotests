@@ -782,6 +782,34 @@ export class GameSession {
     await clickAt(this.page, x, y);
   }
 
+  async checkpointAndClickAt(x: number, y: number, label?: string): Promise<number> {
+    const sequence = await this.checkpoint();
+    await this.clickAt(x, y, label);
+    return sequence;
+  }
+
+  async clickAtAndWaitEventAfter(
+    x: number,
+    y: number,
+    filter: EventFilter,
+    timeoutMs = env.eventTimeoutMs,
+    label?: string
+  ): Promise<AutotestEvent> {
+    const sequence = await this.checkpointAndClickAt(x, y, label);
+    return this.waitEventAfter(filter, sequence, timeoutMs);
+  }
+
+  async clickAtAndWaitAnyEventAfter(
+    x: number,
+    y: number,
+    filters: EventFilter[],
+    timeoutMs = env.eventTimeoutMs,
+    label?: string
+  ): Promise<AutotestEvent> {
+    const sequence = await this.checkpointAndClickAt(x, y, label);
+    return this.waitAnyEventAfter(filters, sequence, timeoutMs);
+  }
+
   async waitMs(timeoutMs: number): Promise<void> {
     await this.page.waitForTimeout(timeoutMs);
   }
