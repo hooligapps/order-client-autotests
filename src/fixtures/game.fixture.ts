@@ -54,6 +54,19 @@ function parsePayload(payload: string | null | undefined): Record<string, string
     }, {});
 }
 
+const mirroredBattleAbilitySteps = new Set(["BattleTower4"]);
+
+function normalizeBattleAbilityUnityPoint(stepId: string | undefined, x: number, y: number): { x: number; y: number } {
+  const normalizedX = mirroredBattleAbilitySteps.has(stepId ?? "")
+    ? Math.min(x, 1279 - x)
+    : x;
+
+  return {
+    x: Math.max(0, Math.min(1279, normalizedX)),
+    y: Math.max(0, Math.min(719, y))
+  };
+}
+
 export class GameSession {
   private static readonly ageConfirmSelector = "#age-confirm-btn";
   private static readonly ageOverlaySelector = "#age-confirmation";
@@ -72,6 +85,7 @@ export class GameSession {
   private readonly failedRequests: FailedRequestDiagnostics[] = [];
   private keyPointPrefix = "[game]";
   private eventSegmentStartSequence = 0;
+  private logStartTimestampMs = Date.now();
 
   constructor(private readonly page: Page) {}
 
@@ -80,7 +94,23 @@ export class GameSession {
   }
 
   private logKeyPoint(message: string): void {
-    console.log(`${this.keyPointPrefix} ${message}`);
+    console.log(`${this.getTimedPrefix(this.keyPointPrefix)} ${message}`);
+  }
+
+  logDebug(message: string): void {
+    this.logKeyPoint(message);
+  }
+
+  private getTimedPrefix(prefix: string): string {
+    return `${this.formatElapsedSinceStart()} ${prefix}`;
+  }
+
+  private formatElapsedSinceStart(): string {
+    const elapsedMs = Math.max(0, Date.now() - this.logStartTimestampMs);
+    const minutes = Math.floor(elapsedMs / 60000);
+    const seconds = Math.floor((elapsedMs % 60000) / 1000);
+    const milliseconds = elapsedMs % 1000;
+    return `[t+${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}]`;
   }
 
   private async logClickDiagnostics(stage: "before" | "after", x: number, y: number): Promise<void> {
@@ -201,6 +231,7 @@ export class GameSession {
   }
 
   async open(): Promise<void> {
+    this.logStartTimestampMs = Date.now();
     this.logKeyPoint(`open ${this.resolvedUrl}`);
     await this.page.goto(this.resolvedUrl, {
       waitUntil: "domcontentloaded"
@@ -309,7 +340,7 @@ export class GameSession {
       this.consoleMessages.push(consoleMessage);
 
       if (options.liveConsole) {
-        const prefix = `[browser:${testInfo.title}]`;
+        const prefix = this.getTimedPrefix(`[browser:${testInfo.title}]`);
         console.log(`${prefix} ${consoleMessage.type}: ${consoleMessage.text}`);
       }
     });
@@ -319,7 +350,7 @@ export class GameSession {
       this.pageErrors.push(renderedError);
 
       if (options.liveConsole) {
-        console.log(`[browser:${testInfo.title}] pageerror: ${renderedError}`);
+        console.log(`${this.getTimedPrefix(`[browser:${testInfo.title}]`)} pageerror: ${renderedError}`);
       }
     });
 
@@ -334,7 +365,7 @@ export class GameSession {
 
       if (options.liveConsole) {
         console.log(
-          `[browser:${testInfo.title}] requestfailed: ${failedRequest.method} ${failedRequest.url} [${failedRequest.resourceType}] -> ${failedRequest.failureText}`
+          `${this.getTimedPrefix(`[browser:${testInfo.title}]`)} requestfailed: ${failedRequest.method} ${failedRequest.url} [${failedRequest.resourceType}] -> ${failedRequest.failureText}`
         );
       }
     });
@@ -511,9 +542,10 @@ export class GameSession {
     }, afterSequence, timeoutMs);
 
     const payload = parsePayload(event.payload);
+    const normalizedPoint = normalizeBattleAbilityUnityPoint(stepId, Number(payload.screenX ?? payload.x), Number(payload.screenY ?? payload.y));
     const activation: BattleAbilityActivation = {
-      x: Number(payload.screenX ?? payload.x),
-      y: Number(payload.screenY ?? payload.y),
+      x: normalizedPoint.x,
+      y: normalizedPoint.y,
       ...(payload.cardConfigId ? { cardConfigId: Number(payload.cardConfigId) } : {}),
       ...(payload.abilityId ? { abilityId: Number(payload.abilityId) } : {})
     };
@@ -556,9 +588,12 @@ export class GameSession {
     await clickAt(this.page, toPoint.x, toPoint.y);
   }
 
-  async clickUnityScreenPoint(x: number, y: number): Promise<void> {
+  async clickUnityScreenPoint(x: number, y: number, label?: string): Promise<void> {
     const point = await this.mapUnityScreenToPageCoords(x, y);
-    this.logKeyPoint(`battle_click_point x=${point.x.toFixed(0)} y=${point.y.toFixed(0)} from unity x=${String(x)} y=${String(y)}`);
+    this.logKeyPoint(
+      `battle_click_point label=${this.getClickLabel(label)} `
+      + `x=${point.x.toFixed(0)} y=${point.y.toFixed(0)} from unity x=${String(x)} y=${String(y)}`
+    );
     await clickAt(this.page, point.x, point.y);
   }
 
@@ -725,8 +760,19 @@ export class GameSession {
     }, env.eventTimeoutMs);
   }
 
-  async clickAt(x: number, y: number): Promise<void> {
-    this.logKeyPoint(`click x=${x.toFixed(0)} y=${y.toFixed(0)}`);
+  private getClickLabel(label?: string): string {
+    if (label) {
+      return label;
+    }
+
+    const stack = new Error().stack?.split("\n") ?? [];
+    const callerFrame = stack[3] ?? stack[2] ?? "";
+    const match = callerFrame.match(/([^/]+\.(?:ts|js):\d+:\d+)/);
+    return match?.[1] ?? "unlabeled";
+  }
+
+  async clickAt(x: number, y: number, label?: string): Promise<void> {
+    this.logKeyPoint(`click label=${this.getClickLabel(label)} x=${x.toFixed(0)} y=${y.toFixed(0)}`);
     await this.page.waitForTimeout(GameSession.actionDelayMs);
     await this.logClickDiagnostics("before", x, y);
     await clickAt(this.page, x, y);

@@ -49,7 +49,7 @@ export const tutorCoords = {
   first_campaign_btn: { x: 294, y: 637 },
   pick_best_btn: { x: 1364, y: 542 },
 
-  interact_chatGirl21: { x: 750, y: 336 },
+  interact_chatGirl21: { x: 796, y: 335 },
   dashboard_quests_btn: { x: 313, y: 702 }
 } satisfies Record<string, Point>;
 
@@ -81,6 +81,7 @@ export const walkthroughCoords = {
     secondNewGirlClose: { x: 921, y: 452 },
     thirdNewGirlClose: { x: 837, y: 468 },
     answer: { x: 949, y: 601 },
+    chatPhoto: { x: 726, y: 391 },
     galleryClose: { x: 1403, y: 81 }
   },
   battleTower3: {
@@ -113,13 +114,14 @@ export const walkthroughCoords = {
     winDialogClose: { x: 1075, y: 642 }
   },
   chat3: {
-    answer: { x: 994, y: 603 },
-    galleryClose: { x: 1391, y: 83 },
-    closeButton: { x: 197, y: 64 }
+    answer: { x: 961, y: 710 },
+    chatPhoto: { x: 722, y: 384 },
+    galleryClose: { x: 683, y: 492 },
+    closeButton: { x: 176, y: 175 }
   },
   levelUpGirl2: {
     dashboardGirlsButton: { x: 1362, y: 693 },
-    firstGirlCard: { x: 362, y: 208 },
+    firstGirlCard: { x: 490, y: 255 },
     levelUpButton: { x: 1214, y: 632 },
     closeButton: { x: 202, y: 66 }
   },

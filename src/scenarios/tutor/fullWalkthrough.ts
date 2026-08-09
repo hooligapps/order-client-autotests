@@ -1,14 +1,21 @@
 import type { GameSession } from "../../fixtures/game.fixture";
-import type { AutotestEvent, EventFilter } from "../../types/autotest";
+import type { AutotestEvent, BattleMoveAdvice, EventFilter } from "../../types/autotest";
 import { introCoords, tutorCoords, tutorTimings, walkthroughCoords } from "./coords";
 import { bootstrapTutorWalkthrough } from "./walkthrough";
 
-async function click(game: GameSession, point: { x: number; y: number }): Promise<void> {
-  await game.clickAt(point.x, point.y);
+function getCallerClickLabel(): string {
+  const stack = new Error().stack?.split("\n") ?? [];
+  const callerFrame = stack[3] ?? stack[2] ?? "";
+  const match = callerFrame.match(/([^/]+\.(?:ts|js):\d+:\d+)/);
+  return match?.[1] ?? "unknown";
+}
+
+async function click(game: GameSession, point: { x: number; y: number }, label?: string): Promise<void> {
+  await game.clickAt(point.x, point.y, label ?? getCallerClickLabel());
 }
 
 async function clickTarget(game: GameSession, target: keyof typeof tutorCoords): Promise<void> {
-  await click(game, tutorCoords[target]);
+  await click(game, tutorCoords[target], `target:${target}`);
 }
 
 async function clickTargetUntilTutorProgress(
@@ -60,11 +67,12 @@ async function clickPointUntilEventProgress(
   point: { x: number; y: number },
   filters: EventFilter[],
   maxAttempts = 3,
-  timeoutMs = 5000
+  timeoutMs = 5000,
+  label?: string
 ): Promise<AutotestEvent> {
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     const sequence = await game.checkpoint();
-    await click(game, point);
+    await click(game, point, label);
 
     try {
       return await game.waitAnyEventAfter(filters, sequence, timeoutMs);
@@ -83,10 +91,316 @@ type TutorStepStart = {
   firstReplica: AutotestEvent,
 };
 
+type ReadyBattleAbility = {
+  key: string,
+  point: { x: number; y: number },
+  sequence: number,
+};
+
+const mirroredBattleAbilitySteps = new Set(["BattleTower4"]);
+
+function normalizeBattleAbilityUnityPoint(stepId: string | undefined, x: number, y: number): { x: number; y: number } {
+  const normalizedX = mirroredBattleAbilitySteps.has(stepId ?? "")
+    ? Math.min(x, 1279 - x)
+    : x;
+
+  return {
+    x: Math.max(0, Math.min(1279, normalizedX)),
+    y: Math.max(0, Math.min(719, y))
+  };
+}
+
 async function beginTutorStep(game: GameSession, stepId: string): Promise<TutorStepStart> {
   const stepStarted = await game.waitTutorStepStarted(stepId);
   const firstReplica = await game.waitTutorReplicaShown(stepId, stepStarted.sequence);
   return { stepStarted, firstReplica };
+}
+
+function parseAutotestPayload(payload: string | null | undefined): Record<string, string> {
+  if (!payload) return {};
+
+  return payload
+    .split(";")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .reduce<Record<string, string>>((acc, part) => {
+      const [key, value] = part.split("=");
+      if (key && value !== undefined) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+}
+
+function getReadyBattleAbility(event: AutotestEvent): ReadyBattleAbility | null {
+  if (event.source !== "battle" || event.type !== "ability_ready" || event.name !== "HeroAbilityReady") {
+    return null;
+  }
+
+  const payload = parseAutotestPayload(event.payload);
+  const x = Number(payload.screenX ?? payload.x);
+  const y = Number(payload.screenY ?? payload.y);
+  const cardConfigId = payload.cardConfigId ?? "unknown";
+  const abilityId = payload.abilityId ?? "unknown";
+
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    return null;
+  }
+
+  const normalizedPoint = normalizeBattleAbilityUnityPoint(event.stepId, x, y);
+
+  return {
+    key: `${cardConfigId}:${abilityId}`,
+    point: normalizedPoint,
+    sequence: event.sequence
+  };
+}
+
+function getBattleMoveAdvice(event: AutotestEvent): { event: AutotestEvent, advice: BattleMoveAdvice } | null {
+  if (event.source !== "battle" || event.type !== "move_advice") {
+    return null;
+  }
+
+  const payload = parseAutotestPayload(event.payload);
+  return {
+    event,
+    advice: {
+      fromCol: Number(payload.fromCol),
+      fromRow: Number(payload.fromRow),
+      toCol: Number(payload.toCol),
+      toRow: Number(payload.toRow),
+      fromScreenX: Number(payload.fromScreenX),
+      fromScreenY: Number(payload.fromScreenY),
+      toScreenX: Number(payload.toScreenX),
+      toScreenY: Number(payload.toScreenY),
+      fromType: payload.fromType,
+      toType: payload.toType,
+      fromState: payload.fromState,
+      toState: payload.toState
+    }
+  };
+}
+
+function upsertReadyBattleAbility(queue: ReadyBattleAbility[], ability: ReadyBattleAbility): void {
+  const existingIndex = queue.findIndex((item) =>
+    item.key === ability.key
+    && item.point.x === ability.point.x
+    && item.point.y === ability.point.y
+  );
+  if (existingIndex >= 0) {
+    return;
+  }
+
+  queue.push(ability);
+}
+
+async function tryUseBattleAbilityPoint(
+  game: GameSession,
+  stepId: string,
+  point: { x: number; y: number },
+  sourceLabel: string,
+  abilityKey?: string,
+  pointSpace: "page" | "unity" = "page"
+): Promise<AutotestEvent | null> {
+  game.logDebug(
+    `ability_click source=${sourceLabel} stepId=${stepId} x=${String(point.x)} y=${String(point.y)}`
+    + (abilityKey ? ` abilityKey=${abilityKey}` : "")
+  );
+
+  try {
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const sequence = await game.checkpoint();
+      if (pointSpace === "unity") {
+        await game.clickUnityScreenPoint(point.x, point.y, `ability:${sourceLabel}:${stepId}`);
+      } else {
+        await click(game, point, `ability:${sourceLabel}:${stepId}`);
+      }
+
+      try {
+        return await game.waitAnyEventAfter(
+          [{ source: "tutor", type: "event_emitted", name: "UseBattleAbility", stepId }],
+          sequence,
+          2500
+        );
+      } catch (error) {
+        if (attempt === 1) {
+          throw error;
+        }
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function tryUseQueuedBattleAbility(
+  game: GameSession,
+  stepId: string,
+  readyAbility: ReadyBattleAbility | null,
+  fallbackPoint?: { x: number; y: number },
+  preferFallback = false
+): Promise<AutotestEvent | null> {
+  if (preferFallback && fallbackPoint) {
+    const fallbackUse = await tryUseBattleAbilityPoint(
+      game,
+      stepId,
+      fallbackPoint,
+      "fallback",
+      readyAbility?.key
+    );
+    if (fallbackUse) {
+      return fallbackUse;
+    }
+  }
+
+  if (readyAbility) {
+    const readyUse = await tryUseBattleAbilityPoint(
+      game,
+      stepId,
+      readyAbility.point,
+      "ready",
+      readyAbility.key,
+      "unity"
+    );
+    if (readyUse) {
+      return readyUse;
+    }
+  }
+
+  if (!preferFallback && fallbackPoint) {
+    return tryUseBattleAbilityPoint(
+      game,
+      stepId,
+      fallbackPoint,
+      "fallback",
+      readyAbility?.key
+    );
+  }
+
+  return null;
+}
+
+async function runBattleTurnsWithAbilityQueue(
+  game: GameSession,
+  stepId: string,
+  initialBoundary: number,
+  options?: {
+    fallbackPoint?: { x: number; y: number },
+    preferFallbackForAbility?: boolean,
+    replicaHandler?: (event: AutotestEvent) => Promise<number>,
+    extraFilters?: EventFilter[],
+  }
+): Promise<number> {
+  let turnBoundary = initialBoundary;
+  const readyQueue: ReadyBattleAbility[] = [];
+  const triedThisHeroTurn = new Set<string>();
+
+  while (true) {
+    const nextEvent = await game.waitAnyEventAfter([
+      { source: "battle", type: "ability_ready", name: "HeroAbilityReady", stepId },
+      { source: "battle", type: "move_advice", stepId },
+      { source: "tutor", type: "event_emitted", name: "Match3HeroTurn", stepId },
+      { source: "tutor", type: "event_emitted", name: "BattleEnemyDefeated", stepId },
+      { source: "tutor", type: "event_emitted", name: "BattleStartHeroTurn", stepId },
+      { source: "tutor", type: "event_emitted", name: "BattleEndHeroTurn", stepId },
+      { source: "tutor", type: "event_emitted", name: "BattleEndEnemyTurn", stepId },
+      ...(options?.extraFilters ?? [])
+    ], turnBoundary);
+
+    if (nextEvent.source === "tutor" && nextEvent.type === "event_emitted" && nextEvent.name === "BattleEnemyDefeated") {
+      return nextEvent.sequence;
+    }
+
+    if (nextEvent.source === "tutor" && nextEvent.type === "event_emitted" && nextEvent.name === "BattleStartHeroTurn") {
+      triedThisHeroTurn.clear();
+      turnBoundary = nextEvent.sequence;
+      continue;
+    }
+
+    if (nextEvent.source === "tutor" && nextEvent.type === "event_emitted" && nextEvent.name === "Match3HeroTurn") {
+      turnBoundary = nextEvent.sequence;
+      continue;
+    }
+
+    if (nextEvent.source === "tutor" && nextEvent.type === "event_emitted" && nextEvent.name === "BattleEndEnemyTurn") {
+      turnBoundary = nextEvent.sequence;
+      continue;
+    }
+
+    if (nextEvent.source === "tutor" && nextEvent.type === "event_emitted" && nextEvent.name === "BattleEndHeroTurn") {
+      turnBoundary = nextEvent.sequence;
+      continue;
+    }
+
+    if (nextEvent.source === "battle" && nextEvent.type === "ability_ready" && nextEvent.name === "HeroAbilityReady") {
+      const readyAbility = getReadyBattleAbility(nextEvent);
+      if (readyAbility) {
+        upsertReadyBattleAbility(readyQueue, readyAbility);
+      }
+      turnBoundary = nextEvent.sequence;
+      continue;
+    }
+
+    if (nextEvent.source === "battle" && nextEvent.type === "move_advice") {
+      const nextReadyAbility = readyQueue.find((ability) => !triedThisHeroTurn.has(`${ability.key}@${ability.point.x},${ability.point.y}`));
+      if (nextReadyAbility) {
+        const useAbility = await tryUseQueuedBattleAbility(
+          game,
+          stepId,
+          nextReadyAbility,
+          options?.fallbackPoint,
+          options?.preferFallbackForAbility ?? false
+        );
+
+        const readyAbilitySignature = `${nextReadyAbility.key}@${nextReadyAbility.point.x},${nextReadyAbility.point.y}`;
+        triedThisHeroTurn.add(readyAbilitySignature);
+
+        if (useAbility) {
+          await game.waitBattleAbilityActivatedAfter(useAbility.sequence, stepId);
+          const abilityUsed = await game.waitEventAfter(
+            { source: "tutor", type: "event_emitted", name: "BattleAbilityUsed", stepId },
+            useAbility.sequence
+          );
+
+          const usedIndex = readyQueue.findIndex((ability) =>
+            ability.key === nextReadyAbility.key
+            && ability.point.x === nextReadyAbility.point.x
+            && ability.point.y === nextReadyAbility.point.y
+          );
+          if (usedIndex >= 0) {
+            readyQueue.splice(usedIndex, 1);
+          }
+
+          turnBoundary = abilityUsed.sequence;
+          continue;
+        }
+      }
+
+      const moveAdvice = getBattleMoveAdvice(nextEvent);
+      if (!moveAdvice) {
+        turnBoundary = nextEvent.sequence;
+        continue;
+      }
+
+      await game.playBattleMoveAdvice(moveAdvice.advice);
+      const match = await game.waitEventAfter(
+        { source: "tutor", type: "event_emitted", name: "Match3HeroTurn", stepId },
+        nextEvent.sequence
+      );
+      turnBoundary = match.sequence;
+      continue;
+    }
+
+    if (options?.replicaHandler && nextEvent.source === "tutor" && nextEvent.type === "replica_shown") {
+      triedThisHeroTurn.clear();
+      turnBoundary = await options.replicaHandler(nextEvent);
+      continue;
+    }
+
+    turnBoundary = nextEvent.sequence;
+  }
 }
 
 async function skipIntroVideo(game: GameSession, name: string): Promise<void> {
@@ -170,71 +484,80 @@ async function clickChatAnswerAt(game: GameSession, point: { x: number; y: numbe
 async function dismissContinueReplica(
   game: GameSession,
   stepId: string,
-  point: { x: number; y: number },
+  point: { x: number; y: number } | Array<{ x: number; y: number }>,
   afterSequence: number,
   progressFilters?: EventFilter[]
 ): Promise<AutotestEvent> {
   const filters = progressFilters ?? [
     { source: "tutor", type: "event_emitted", name: "ClickContinueInMessage", stepId }
   ];
+  const points = Array.isArray(point) ? point : [point];
 
-  let currentAfterSequence = afterSequence;
+  const readyEvent = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ContinueMessageReady", stepId },
+    afterSequence
+  );
+
+  // Give the continue area a brief settle window after the ready signal.
+  await game.waitMs(250);
+
+  let lastBoundary = readyEvent.sequence;
   for (let attempt = 0; attempt < 3; attempt += 1) {
-    const readyEvent = await game.waitEventAfter(
-      { source: "tutor", type: "event_emitted", name: "ContinueMessageReady", stepId },
-      currentAfterSequence
-    );
-
-    // Give the continue area a brief settle window after the ready signal.
-    await game.waitMs(250);
-
     const clickSequence = await game.checkpoint();
-    await click(game, point);
+    await click(game, points[attempt % points.length]);
 
     try {
-      return await game.waitAnyEventAfter(filters, clickSequence, 8000);
+      return await game.waitAnyEventAfter(filters, Math.min(lastBoundary, clickSequence), 4000);
     } catch (error) {
       if (attempt === 2) {
         throw error;
       }
 
-      currentAfterSequence = readyEvent.sequence;
-      await game.waitMs(500);
+      lastBoundary = Math.min(lastBoundary, clickSequence);
+      await game.waitMs(350);
     }
   }
 
-  throw new Error(`Failed to dismiss continue replica for ${stepId}`);
+  return game.waitAnyEventAfter(filters, lastBoundary, 8000);
 }
 
 async function openChatPhoto(
   game: GameSession,
   stepId: string,
   point: { x: number; y: number },
-  maxAttempts = 3
+  maxAttempts = 3,
+  retryDelayMs = 300
 ): Promise<AutotestEvent> {
   for (let i = 0; i < maxAttempts; i += 1) {
     const sequence = await game.checkpoint();
     await click(game, point);
 
     try {
-      const galleryClicked = await game.waitEventAfter(
+      const photoProgress = await game.waitAnyEventAfter([
         { source: "tutor", type: "event_emitted", name: "GalleryButtonClicked", stepId },
-        sequence
-      );
+        { source: "tutor", type: "event_emitted", name: "PhotoOpen", stepId },
+        { source: "tutor", type: "event_emitted", name: "PhotoOpened", stepId }
+      ], sequence, 2000);
+
+      if (photoProgress.name === "PhotoOpened") {
+        return photoProgress;
+      }
 
       return await game.waitEventAfter(
         { source: "tutor", type: "event_emitted", name: "PhotoOpened", stepId },
-        galleryClicked.sequence
+        photoProgress.sequence,
+        5000
       );
     } catch {
-      await game.waitMs(300);
+      await game.waitMs(retryDelayMs);
     }
   }
 
   const sequence = await game.checkpoint();
   return game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "PhotoOpened", stepId },
-    sequence
+    sequence,
+    5000
   );
 }
 
@@ -269,7 +592,10 @@ async function advanceChatAtUntilCompleted(
   game: GameSession,
   point: { x: number; y: number } | Array<{ x: number; y: number }>,
   afterSequence: number,
-  stepId?: string
+  stepId?: string,
+  options?: {
+    waitForAnswerReady?: boolean,
+  }
 ): Promise<void> {
   const points = Array.isArray(point) ? point : [point];
   let boundary = afterSequence;
@@ -279,12 +605,30 @@ async function advanceChatAtUntilCompleted(
       return;
     }
 
+    if (options?.waitForAnswerReady) {
+      const readyOrCompleted = await game.waitAnyEventAfter([
+        { source: "chat", type: "answers_ready", name: "ChatAnswersReady", ...(stepId ? { stepId } : {}) },
+        { source: "chat", type: "answer_ready", name: "ChatAnswerReady", ...(stepId ? { stepId } : {}) },
+        { source: "tutor", type: "event_emitted", name: "ChatStoryCompleted", ...(stepId ? { stepId } : {}) }
+      ], boundary, 10000);
+
+      if (readyOrCompleted.source === "tutor") {
+        return;
+      }
+    }
+
     const clickSequence = await game.checkpoint();
     await clickChatAnswerAt(game, points[i % points.length]);
-    const nextEvent = await game.waitAnyEventAfter([
-      { source: "chat", type: "answer_accepted", name: "ChatAnswerAccepted", ...(stepId ? { stepId } : {}) },
-      { source: "tutor", type: "event_emitted", name: "ChatStoryCompleted", ...(stepId ? { stepId } : {}) }
-    ], clickSequence, 5000);
+    let nextEvent: AutotestEvent;
+    try {
+      nextEvent = await game.waitAnyEventAfter([
+        { source: "chat", type: "answer_accepted", name: "ChatAnswerAccepted", ...(stepId ? { stepId } : {}) },
+        { source: "tutor", type: "event_emitted", name: "ChatStoryCompleted", ...(stepId ? { stepId } : {}) }
+      ], clickSequence, 5000);
+    } catch {
+      boundary = Math.max(boundary, clickSequence);
+      continue;
+    }
 
     boundary = nextEvent.sequence;
     if (nextEvent.source === "tutor") {
@@ -304,37 +648,43 @@ async function useReadyHeroAbility(
   readyAfterSequence: number,
   fallbackPoint: { x: number; y: number }
 ): Promise<{ useAbility: AutotestEvent; abilityUsed: AutotestEvent }> {
-  const ready = await game.waitBattleAbilityReadyAfter(readyAfterSequence, stepId, 5000);
-
-  const useAbility = await clickPointUntilEventProgress(
-    game,
-    (() => {
+  const useAbility = await (async () => {
+    try {
+      const ready = await game.waitBattleAbilityReadyAfter(readyAfterSequence, stepId, 5000);
       const hasFiniteActivation =
         Number.isFinite(ready.activation.x)
         && Number.isFinite(ready.activation.y);
 
-      if (!hasFiniteActivation) {
-        return fallbackPoint;
-      }
+      if (hasFiniteActivation) {
+        const readyUse = await tryUseBattleAbilityPoint(
+          game,
+          stepId,
+          {
+            x: Math.max(0, Math.min(1279, ready.activation.x)),
+            y: Math.max(0, Math.min(719, ready.activation.y))
+          },
+          "ready",
+          ready.activation.cardConfigId !== undefined || ready.activation.abilityId !== undefined
+            ? `${String(ready.activation.cardConfigId ?? "unknown")}:${String(ready.activation.abilityId ?? "unknown")}`
+            : undefined,
+          "unity"
+        );
 
-      return {
-        x: Math.max(0, Math.min(1279, ready.activation.x)),
-        y: Math.max(0, Math.min(719, ready.activation.y))
-      };
-    })(),
-    [
-      { source: "tutor", type: "event_emitted", name: "UseBattleAbility", stepId }
-    ],
-    2,
-    2500
-  ).catch(async () => {
+        if (readyUse) {
+          return readyUse;
+        }
+      }
+    } catch {
+      // Fallback click below handles missing or invalid ready events.
+    }
+
     const sequence = await game.checkpoint();
     await click(game, fallbackPoint);
     return game.waitEventAfter(
       { source: "tutor", type: "event_emitted", name: "UseBattleAbility", stepId },
       sequence
     );
-  });
+  })();
 
   await game.waitBattleAbilityActivatedAfter(useAbility.sequence, stepId);
   const abilityUsed = await game.waitEventAfter(
@@ -776,7 +1126,7 @@ async function runChat1(game: GameSession): Promise<void> {
   );
   await game.waitTutorHighlightRequested("chat_photo");
 
-  const photoOpened = await openChatPhoto(game, "Chat1", tutorCoords.chat_photo);
+  const photoOpened = await openChatPhoto(game, "Chat1", walkthroughCoords.chat1.chatPhoto);
 
   sequence = await game.checkpoint();
   await click(game, walkthroughCoords.chat1.galleryClose);
@@ -883,47 +1233,33 @@ async function runBattleTower3(game: GameSession): Promise<void> {
     tutorCoords.interact_firstBattlerWithAbility
   );
 
-  let turnBoundary = abilityUsed.sequence;
-  let battleEnemyDefeated: number | null = null;
-
-  while (battleEnemyDefeated === null) {
-    const nextEvent = await game.waitAnyEventAfter([
-      { source: "battle", type: "move_advice", stepId: "BattleTower3" },
-      { source: "tutor", type: "replica_shown", stepId: "BattleTower3" },
-      { source: "tutor", type: "event_emitted", name: "BattleEnemyDefeated", stepId: "BattleTower3" }
-    ], turnBoundary);
-
-    const isBattleEnemyDefeated =
-      nextEvent.source === "tutor"
-      && nextEvent.type === "event_emitted"
-      && nextEvent.name === "BattleEnemyDefeated";
-
-    if (isBattleEnemyDefeated) {
-      battleEnemyDefeated = nextEvent.sequence;
-      break;
+  const battleEnemyDefeated = await runBattleTurnsWithAbilityQueue(
+    game,
+    "BattleTower3",
+    abilityUsed.sequence,
+    {
+      extraFilters: [{ source: "tutor", type: "replica_shown", stepId: "BattleTower3" }],
+      replicaHandler: async (event) => {
+        await dismissContinueReplica(
+          game,
+          "BattleTower3",
+          [
+            coords.continueMessage,
+            { x: coords.continueMessage.x + 36, y: coords.continueMessage.y + 10 },
+            { x: coords.continueMessage.x - 32, y: coords.continueMessage.y + 18 }
+          ],
+          event.sequence,
+          [
+            { source: "tutor", type: "event_emitted", name: "ClickContinueInMessage", stepId: "BattleTower3" },
+            { source: "tutor", type: "replica_hidden", stepId: "BattleTower3" },
+            { source: "tutor", type: "event_emitted", name: "BattleEnemyDefeated", stepId: "BattleTower3" },
+            { source: "tutor", type: "event_emitted", name: "BattleWinDialogOpened", stepId: "BattleTower3" }
+          ]
+        );
+        return event.sequence;
+      }
     }
-
-    if (nextEvent.source === "tutor" && nextEvent.type === "replica_shown") {
-      await dismissContinueReplica(game, "BattleTower3", coords.continueMessage, nextEvent.sequence);
-
-      const moveAdvice = await game.waitBattleMoveAdviceAfter(nextEvent.sequence);
-      await game.playBattleMoveAdvice(moveAdvice.advice);
-      const match = await game.waitEventAfter(
-        { source: "tutor", type: "event_emitted", name: "Match3HeroTurn", stepId: "BattleTower3" },
-        moveAdvice.event.sequence
-      );
-      turnBoundary = match.sequence;
-      continue;
-    }
-
-    const moveAdvice = await game.waitBattleMoveAdviceAfter(turnBoundary);
-    await game.playBattleMoveAdvice(moveAdvice.advice);
-    const match = await game.waitEventAfter(
-      { source: "tutor", type: "event_emitted", name: "Match3HeroTurn", stepId: "BattleTower3" },
-      moveAdvice.event.sequence
-    );
-    turnBoundary = match.sequence;
-  }
+  );
 
   const stepSaved = await game.waitEventAfter(
     { source: "tutor", type: "step_saved", stepId: "BattleTower3" },
@@ -1189,33 +1525,12 @@ async function runBattleTower4(game: GameSession): Promise<void> {
     battleStartLoading
   );
 
-  let turnBoundary = battleStarted.sequence;
-  let battleEnemyDefeated: number | null = null;
-
-  while (battleEnemyDefeated === null) {
-    const nextEvent = await game.waitAnyEventAfter([
-      { source: "battle", type: "move_advice", stepId: "BattleTower4" },
-      { source: "tutor", type: "event_emitted", name: "BattleEnemyDefeated", stepId: "BattleTower4" }
-    ], turnBoundary);
-
-    const isBattleEnemyDefeated =
-      nextEvent.source === "tutor"
-      && nextEvent.type === "event_emitted"
-      && nextEvent.name === "BattleEnemyDefeated";
-
-    if (isBattleEnemyDefeated) {
-      battleEnemyDefeated = nextEvent.sequence;
-      break;
-    }
-
-    const moveAdvice = await game.waitBattleMoveAdviceAfter(turnBoundary);
-    await game.playBattleMoveAdvice(moveAdvice.advice);
-    const match = await game.waitEventAfter(
-      { source: "tutor", type: "event_emitted", name: "Match3HeroTurn", stepId: "BattleTower4" },
-      moveAdvice.event.sequence
-    );
-    turnBoundary = match.sequence;
-  }
+  const battleEnemyDefeated = await runBattleTurnsWithAbilityQueue(
+    game,
+    "BattleTower4",
+    battleStarted.sequence,
+    { fallbackPoint: tutorCoords.interact_firstBattlerWithAbility }
+  );
 
   const stepSaved = await game.waitEventAfter(
     { source: "tutor", type: "step_saved", stepId: "BattleTower4" },
@@ -1409,50 +1724,12 @@ async function runBattleCampaign1(game: GameSession): Promise<void> {
     battleStartLoading
   );
 
-  let turnBoundary = battleStarted.sequence;
-  let battleEnemyDefeated: number | null = null;
-
-  while (battleEnemyDefeated === null) {
-    const nextEvent = await game.waitAnyEventAfter([
-      { source: "battle", type: "ability_ready", name: "HeroAbilityReady", stepId: "BattleCampaign1" },
-      { source: "battle", type: "move_advice", stepId: "BattleCampaign1" },
-      { source: "tutor", type: "event_emitted", name: "BattleEnemyDefeated", stepId: "BattleCampaign1" }
-    ], turnBoundary);
-
-    const isBattleEnemyDefeated =
-      nextEvent.source === "tutor"
-      && nextEvent.type === "event_emitted"
-      && nextEvent.name === "BattleEnemyDefeated";
-
-    if (isBattleEnemyDefeated) {
-      battleEnemyDefeated = nextEvent.sequence;
-      break;
-    }
-
-    const isAbilityReady =
-      nextEvent.source === "battle"
-      && nextEvent.type === "ability_ready"
-      && nextEvent.name === "HeroAbilityReady";
-
-    if (isAbilityReady) {
-      const { abilityUsed } = await useReadyHeroAbility(
-        game,
-        "BattleCampaign1",
-        turnBoundary,
-        tutorCoords.interact_firstBattlerWithAbility
-      );
-      turnBoundary = abilityUsed.sequence;
-      continue;
-    }
-
-    const moveAdvice = await game.waitBattleMoveAdviceAfter(turnBoundary);
-    await game.playBattleMoveAdvice(moveAdvice.advice);
-    const match = await game.waitEventAfter(
-      { source: "tutor", type: "event_emitted", name: "Match3HeroTurn", stepId: "BattleCampaign1" },
-      moveAdvice.event.sequence
-    );
-    turnBoundary = match.sequence;
-  }
+  const battleEnemyDefeated = await runBattleTurnsWithAbilityQueue(
+    game,
+    "BattleCampaign1",
+    battleStarted.sequence,
+    { fallbackPoint: tutorCoords.interact_firstBattlerWithAbility }
+  );
 
   const stepSaved = await game.waitEventAfter(
     { source: "tutor", type: "step_saved", stepId: "BattleCampaign1" },
@@ -1524,18 +1801,29 @@ async function runChat3(game: GameSession): Promise<void> {
     chatOpened.sequence
   );
   await game.waitTutorHighlightRequested("interact_chatGirl21", "Chat3", girlReplica.sequence);
+  await game.waitEventAfter(
+    { source: "tutor", type: "action_executed", name: "RunChats", stepId: "Chat3" },
+    girlReplica.sequence
+  );
+  await game.waitEventAfter(
+    { source: "tutor", type: "pointer_shown", stepId: "Chat3" },
+    girlReplica.sequence
+  );
+  await game.waitMs(500);
   await click(game, tutorCoords.interact_chatGirl21);
   const chatDialogOpened = await game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "ChatDialogOpened", stepId: "Chat3" },
     girlReplica.sequence
   );
-  await game.waitEventAfter(
-    { source: "ui", type: "dialog_opened", dialog: "ChatDialog" },
-    girlReplica.sequence
-  );
 
-  const beforeChatAnswers = await game.checkpoint();
-  await advanceChatAtUntilCompleted(game, [walkthroughCoords.chat3.answer, walkthroughCoords.chat1.answer], beforeChatAnswers, "Chat3");
+  const beforeChatAnswers = chatDialogOpened.sequence;
+  await advanceChatAtUntilCompleted(
+    game,
+    [walkthroughCoords.chat3.answer, walkthroughCoords.chat1.answer],
+    beforeChatAnswers,
+    "Chat3",
+    { waitForAnswerReady: true }
+  );
 
   const storyCompleted = await game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "ChatStoryCompleted", stepId: "Chat3" },
@@ -1547,10 +1835,11 @@ async function runChat3(game: GameSession): Promise<void> {
   );
   const photoReplica = await game.waitEventAfter(
     { source: "tutor", type: "replica_shown", stepId: "Chat3" },
-    chatDialogOpened.sequence
+    Math.max(chatDialogOpened.sequence, storyCompleted.sequence)
   );
   await game.waitTutorHighlightRequested("chat_photo", "Chat3", photoReplica.sequence);
-  const photoOpened = await openChatPhoto(game, "Chat3", tutorCoords.chat_photo);
+  await game.waitMs(2000);
+  const photoOpened = await openChatPhoto(game, "Chat3", walkthroughCoords.chat3.chatPhoto, 5, 2000);
 
   await click(game, walkthroughCoords.chat3.galleryClose);
   const photoClosed = await game.waitEventAfter(
@@ -1562,9 +1851,21 @@ async function runChat3(game: GameSession): Promise<void> {
     { source: "tutor", type: "replica_shown", stepId: "Chat3" },
     photoClosed.sequence
   );
-  await click(game, walkthroughCoords.chat3.closeButton);
-  await game.waitTutorEvent("ChatClosed", "Chat3", photoClosed.sequence);
-  await game.waitTutorStepCompleted("Chat3");
+  await game.waitEventAfter(
+    { source: "tutor", type: "pointer_shown", stepId: "Chat3" },
+    photoClosed.sequence
+  );
+  await game.waitTutorHighlightRequested("chat_close_btn", "Chat3", photoClosed.sequence);
+  const closeSequence = await game.checkpoint();
+  await clickTarget(game, "chat_close_btn");
+  const chatClosed = await game.waitEventAfter(
+    { source: "tutor", type: "event_emitted", name: "ChatClosed", stepId: "Chat3" },
+    closeSequence
+  );
+  await game.waitEventAfter(
+    { source: "tutor", type: "step_completed", stepId: "Chat3" },
+    chatClosed.sequence
+  );
 }
 
 async function runLevelUpGirl2(game: GameSession): Promise<void> {
@@ -1581,6 +1882,7 @@ async function runLevelUpGirl2(game: GameSession): Promise<void> {
     girlsOpened.sequence
   );
   await game.waitTutorHighlightRequested("interact_firstGirlCard", "LevelUpGirl2", girlsReplica.sequence);
+  await game.waitMs(1500);
   await click(game, walkthroughCoords.levelUpGirl2.firstGirlCard);
   const girlInfoOpen = await game.waitEventAfter(
     { source: "tutor", type: "event_emitted", name: "GirlInfoOpen", stepId: "LevelUpGirl2" },
