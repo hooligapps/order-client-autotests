@@ -1,3 +1,4 @@
+import { test } from "@playwright/test";
 import type { GameSession } from "../../fixtures/game.fixture";
 import { tutorCoords, walkthroughCoords } from "./coords";
 
@@ -160,32 +161,38 @@ export async function runTutorFirstStep(
   game: GameSession,
   scenario: TutorFirstStepScenario
 ): Promise<void> {
-  await game.open();
-  await game.waitReady();
-  await game.waitTutorMainStarted();
+  await test.step("open game and wait tutor ready", async () => {
+    await game.open();
+    await game.waitReady();
+    await game.waitTutorMainStarted();
+  });
 
   if (scenario.stepId === "BattleTower1" && scenario.playThroughBattle !== false) {
-    await runBattleTower1FirstStep(game);
+    await test.step("battle tower 1 first segment", async () => {
+      await runBattleTower1FirstStep(game);
+    });
     return;
   }
 
-  await game.waitTutorStepStarted(scenario.stepId);
-  await game.waitTutorReplicaShown(scenario.stepId);
+  await test.step(`generic first-step: ${scenario.stepId}`, async () => {
+    await game.waitTutorStepStarted(scenario.stepId);
+    await game.waitTutorReplicaShown(scenario.stepId);
 
-  if (scenario.highlightName) {
-    await game.waitTutorHighlightRequested(scenario.highlightName);
-  }
+    if (scenario.highlightName) {
+      await game.waitTutorHighlightRequested(scenario.highlightName);
+    }
 
-  const eventAfterClick = await game.clickAtAndWaitEventAfter(
-    scenario.clickX,
-    scenario.clickY,
-    {
-      source: "tutor",
-      type: "event_emitted",
-      name: scenario.expectedTutorEvent,
-      stepId: scenario.stepId
-    },
-    undefined,
-    "tutor_first_step_click"
-  );
+    await game.clickAtAndWaitEventAfter(
+      scenario.clickX,
+      scenario.clickY,
+      {
+        source: "tutor",
+        type: "event_emitted",
+        name: scenario.expectedTutorEvent,
+        stepId: scenario.stepId
+      },
+      undefined,
+      "tutor_first_step_click"
+    );
+  });
 }

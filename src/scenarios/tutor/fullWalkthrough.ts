@@ -1,8 +1,14 @@
+import { test } from "@playwright/test";
 import type { GameSession } from "../../fixtures/game.fixture";
 import type { AutotestEvent, BattleMoveAdvice, EventFilter } from "../../types/autotest";
 import { matchesFilter } from "../../helpers/autotest";
 import { introCoords, tutorCoords, tutorTimings, walkthroughCoords, type Point } from "./coords";
-import { bootstrapTutorWalkthrough } from "./walkthrough";
+
+async function bootstrapTutorWalkthrough(game: GameSession): Promise<void> {
+  await game.open();
+  await game.waitReady();
+  await game.waitTutorMainStarted();
+}
 
 function getCallerClickLabel(): string {
   const stack = new Error().stack?.split("\n") ?? [];
@@ -1953,19 +1959,49 @@ async function runLastMessage(game: GameSession): Promise<void> {
 }
 
 export async function runFullTutorWalkthrough(game: GameSession): Promise<void> {
-  await bootstrapTutorWalkthrough(game);
-  await runBattleTower1(game);
-  await runBattleTower2(game);
-  await runChat1(game);
-  await runBattleTower3(game);
-  await runTowerChest(game);
-  await runTowerWinsChest(game);
-  await runLevelUpGirl(game);
-  await runChat2(game);
-  await runBattleTower4(game);
-  await runSummonPremium(game);
-  await runBattleCampaign1(game);
-  await runChat3(game);
-  await runLevelUpGirl2(game);
-  await runLastMessage(game);
+  await test.step("bootstrap tutor walkthrough", async () => {
+    await bootstrapTutorWalkthrough(game);
+  });
+  await test.step("BattleTower1", async () => {
+    await runBattleTower1(game);
+  });
+  await test.step("BattleTower2", async () => {
+    await runBattleTower2(game);
+  });
+  await test.step("Chat1", async () => {
+    await runChat1(game);
+  });
+  await test.step("BattleTower3", async () => {
+    await runBattleTower3(game);
+  });
+  await test.step("TowerChest", async () => {
+    await runTowerChest(game);
+  });
+  await test.step("TowerWinsChest", async () => {
+    await runTowerWinsChest(game);
+  });
+  await test.step("LevelUpGirl", async () => {
+    await runLevelUpGirl(game);
+  });
+  await test.step("Chat2", async () => {
+    await runChat2(game);
+  });
+  await test.step("BattleTower4", async () => {
+    await runBattleTower4(game);
+  });
+  await test.step("SummonPremium", async () => {
+    await runSummonPremium(game);
+  });
+  await test.step("BattleCampaign1", async () => {
+    await runBattleCampaign1(game);
+  });
+  await test.step("Chat3", async () => {
+    await runChat3(game);
+  });
+  await test.step("LevelUpGirl2", async () => {
+    await runLevelUpGirl2(game);
+  });
+  await test.step("LastMessage", async () => {
+    await runLastMessage(game);
+  });
 }
