@@ -2,8 +2,6 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-export type AutotestEnvironment = "dev" | "prod";
-
 function readString(name: string): string {
   return (process.env[name] ?? "").trim();
 }
@@ -36,16 +34,7 @@ function readNumber(name: string, fallback: number): number {
   return parsed;
 }
 
-const requestedEnv = readOptionalString("AUTOTEST_ENV") ?? "dev";
-
-if (requestedEnv !== "dev" && requestedEnv !== "prod") {
-  throw new Error("AUTOTEST_ENV must be either 'dev' or 'prod'");
-}
-
 export const env = {
-  autotestEnv: requestedEnv as AutotestEnvironment,
-  devBaseUrl: readOptionalString("DEV_BASE_URL"),
-  prodBaseUrl: readOptionalString("PROD_BASE_URL"),
   buildUrl: readOptionalString("BUILD_URL"),
   extraQuery: readOptionalString("AUTOTEST_QUERY"),
   headless: readBoolean("PLAYWRIGHT_HEADLESS", true),
@@ -60,22 +49,10 @@ export const env = {
   pollIntervalMs: readNumber("PLAYWRIGHT_POLL_INTERVAL_MS", 200)
 };
 
-export function resolveBaseUrl(targetEnv = env.autotestEnv): string {
-  if (env.buildUrl) {
-    return env.buildUrl;
+export function resolveBaseUrl(): string {
+  if (!env.buildUrl) {
+    throw new Error("BUILD_URL is required");
   }
 
-  if (targetEnv === "dev") {
-    if (!env.devBaseUrl) {
-      throw new Error("DEV_BASE_URL is required when AUTOTEST_ENV=dev and BUILD_URL is empty");
-    }
-
-    return env.devBaseUrl;
-  }
-
-  if (!env.prodBaseUrl) {
-    throw new Error("PROD_BASE_URL is required when AUTOTEST_ENV=prod and BUILD_URL is empty");
-  }
-
-  return env.prodBaseUrl;
+  return env.buildUrl;
 }

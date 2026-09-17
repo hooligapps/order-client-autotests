@@ -5,26 +5,20 @@
   "description": "E2E autotests for the WebGL order client",
   "scripts": {
     "test": "playwright test",
+    "test:url": "node scripts/run-tests.mjs",
     "test:bootstrap": "playwright test --grep @bootstrap",
     "test:tutor": "playwright test --grep @tutor",
     "test:tutor:full": "playwright test --grep @full",
-    "test:dev": "cross-env AUTOTEST_ENV=dev playwright test",
-    "test:prod": "cross-env AUTOTEST_ENV=prod playwright test",
     "report": "playwright show-report",
     "docker:build": "docker compose build",
     "docker:test": "docker compose run --rm playwright",
     "docker:test:bootstrap": "docker compose run --rm bootstrap",
     "docker:test:tutor": "docker compose run --rm tutor",
-    "docker:test:tutor:full": "docker compose run --rm tutor-full",
-    "docker:test:dev": "docker compose --profile dev run --rm dev",
-    "docker:test:dev:tutor": "docker compose --profile dev run --rm dev-tutor",
-    "docker:test:dev:tutor:walkthrough": "docker compose --profile dev run --rm dev-tutor-walkthrough",
-    "docker:test:prod": "docker compose --profile prod run --rm prod"
+    "docker:test:tutor:full": "docker compose run --rm tutor-full"
   },
   "devDependencies": {
     "@playwright/test": "1.60.0",
     "@types/node": "^24.0.0",
-    "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "typescript": "^5.8.3"
   }

@@ -5,7 +5,7 @@ Playwright e2e-autotests for a deployed WebGL client. The project does not build
 ## Scope
 
 - Run against arbitrary CDN/dev/prod URLs.
-- Support `dev` and `prod` environments.
+- Use one explicit `BUILD_URL` for every environment.
 - Validate `window.__autotest` and structured events from `app`, `ui`, and `tutor`.
 - Keep scenarios in code through a thin helper/facade layer.
 - Produce HTML/JUnit/JSON reports, screenshots on failure, and traces on retry.
@@ -36,10 +36,10 @@ docker compose build
 docker compose run --rm smoke
 ```
 
-Recommended local dev command for the full tutorial flow:
+Recommended Docker command for the full tutorial flow:
 
 ```bash
-docker compose --profile dev run --rm dev-tutor-walkthrough
+docker compose run --rm tutor-full
 ```
 
 Available services:
@@ -48,10 +48,6 @@ Available services:
 - `bootstrap` runs `@bootstrap`.
 - `tutor` runs `@tutor`.
 - `tutor-full` runs `@full`.
-- `dev` runs the full suite with `AUTOTEST_ENV=dev`.
-- `dev-tutor` runs tutor in `dev`.
-- `dev-tutor-walkthrough` runs the full tutor walkthrough in `dev`.
-- `prod` runs `@prod-safe` in `prod`.
 
 Equivalent npm shortcuts:
 
@@ -61,10 +57,6 @@ npm run docker:test
 npm run docker:test:bootstrap
 npm run docker:test:tutor
 npm run docker:test:tutor:full
-npm run docker:test:dev
-npm run docker:test:dev:tutor
-npm run docker:test:dev:tutor:walkthrough
-npm run docker:test:prod
 ```
 
 `Makefile` shortcuts are also available:
@@ -73,8 +65,6 @@ npm run docker:test:prod
 make build
 make bootstrap
 make tutor-full
-make dev-tutor
-make prod
 ```
 
 Reports are written to local directories:
@@ -87,10 +77,7 @@ Reports are written to local directories:
 Copy `.env.example` to `.env` and fill in the URLs.
 
 ```env
-AUTOTEST_ENV=dev
-DEV_BASE_URL=https://dev-cdn.example.com/build_123/
-PROD_BASE_URL=https://prod-cdn.example.com/la_7_1/
-BUILD_URL=
+BUILD_URL=https://dev-cdn.example.com/build_123/
 AUTOTEST_QUERY=
 PLAYWRIGHT_HEADLESS=1
 PLAYWRIGHT_BROWSER_CONSOLE_LIVE=0
@@ -100,20 +87,13 @@ PLAYWRIGHT_NAVIGATION_TIMEOUT_MS=120000
 PLAYWRIGHT_READY_TIMEOUT_MS=180000
 PLAYWRIGHT_EVENT_TIMEOUT_MS=30000
 PLAYWRIGHT_POLL_INTERVAL_MS=200
-
-TUTOR_STEP_ID=BattleTower1
-TUTOR_CLICK_X=812
-TUTOR_CLICK_Y=642
-TUTOR_EXPECTED_EVENT=ClickContinueInMessage
-TUTOR_HIGHLIGHT_NAME=
 ```
 
 URL resolution rules:
 
-1. If `BUILD_URL` is set, it is used directly.
-2. Otherwise `AUTOTEST_ENV=dev` uses `DEV_BASE_URL`.
-3. Otherwise `AUTOTEST_ENV=prod` uses `PROD_BASE_URL`.
-4. `autotest=true` is always appended.
+1. The `--url` argument of `npm run test:url` sets the URL for that run.
+2. Otherwise `BUILD_URL` is required.
+3. `autotest=true` is always appended.
 
 Optional additional query parameters may be passed via `AUTOTEST_QUERY`, for example `customHeroId=1&customToken=abc`.
 
@@ -132,11 +112,10 @@ Polling controls:
 
 ```bash
 npm test
+npm run test:url -- --url "https://stage.example.com/build/"
 npm run test:bootstrap
 npm run test:tutor
 npm run test:tutor:full
-npm run test:dev
-npm run test:prod
 npm run report
 ```
 
@@ -156,9 +135,12 @@ Notes:
 Examples:
 
 ```bash
-AUTOTEST_ENV=dev DEV_BASE_URL=https://dev-cdn.example.com/build_123/ npm run test:bootstrap
 BUILD_URL=https://cdn.example.com/build_555/ AUTOTEST_QUERY=customToken=abc npm test
+npm run test:url -- --url "https://stage.example.com/build/" --grep "@full" --workers=1
+npm run test:url -- --url "$STAGE_URL" "${TEST_ARGS[@]}"
 ```
+
+`test:url` removes `--url` (or `--build-url`) from the arguments, exposes it to the existing configuration as `BUILD_URL`, and forwards every other argument to Playwright.
 
 ## Project layout
 
@@ -194,7 +176,7 @@ Current coverage:
 
 Current tutor scenarios are coordinate-based: Playwright performs real mouse clicks, while the client validates progress through structured autotest events.
 
-Tutor first-step coverage is configured through `TUTOR_*` environment variables, so coordinates and expected tutor events can be changed without editing the test code. The default scenario expects `BattleTower1` and now plays through the whole first battle segment.
+Tutor first-step coverage supports optional `TUTOR_*` environment overrides, so coordinates and expected tutor events can be changed without editing the test code. They are intentionally omitted from the standard env files because the built-in defaults cover `BattleTower1`, including the whole first battle segment.
 
 For a full tutorial run, use `tests/tutor.walkthrough.spec.ts`. The scenario is defined in code in `src/scenarios/tutor/fullWalkthrough.ts`, because one `TutorStepId` may contain several user actions and it is easier to debug this flow in TypeScript than in a long JSON file.
 
